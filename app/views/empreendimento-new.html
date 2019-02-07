@@ -1,0 +1,129 @@
+<div class="row page-titles">
+    <div class="col-md-5 col-8 align-self-center">
+        <h3 class="text-themecolor">Novo Empreendimento</h3>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#!empreendimento-list">Empreendimento</a></li>
+            <li class="breadcrumb-item active">Cadastrar</li>
+        </ol>
+    </div>
+</div>
+<div class="row" ng-init="newEmpreendimento()">
+	<div class="col-12">
+		<div class="card">
+			<div class="card-body">
+				<h5>Informações</h5>
+				<hr>
+				<div class="row">
+					<div class="col-6">
+						<div class="form-group">
+							<label class="control-label">Cliente</label>
+							<input type="text" class="form-control" ng-model="empreendimento.id_cliente">
+						</div>
+					</div>
+					<div class="col-6">
+						<div class="form-group">
+							<label class="control-label">Nome</label>
+							<input type="text" class="form-control" ng-model="empreendimento.nome">
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-3">
+						<div class="form-group">
+							<label class="control-label">CNPJ</label>
+							<input type="text" class="form-control" ng-model="empreendimento.cnpj">
+						</div>
+					</div>
+					<div class="col-3">
+						<div class="form-group">
+							<label class="control-label">Segmento</label>
+							<select class="form-control" ng-model="empreendimento.id_segmento">
+								<option value="1">Residência</option>
+								<option value="2">Comércio</option>
+								<option value="3">Indústria</option>
+							</select>
+						</div>
+					</div>
+					<div class="col-3">
+						<div class="form-group">
+							<label class="control-label">Porte</label>
+							<select class="form-control" ng-model="empreendimento.id_nivel">
+								<option value="1">Pequeno</option>
+								<option value="2">Médio</option>
+								<option value="3">Grande</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-12">
+						<div class="form-group">
+							<label class="control-label">Descrição</label>
+							<textarea class="form-control" rows="3" ng-model="empreendimento.descricao"></textarea>
+						</div>
+					</div>
+				</div>
+				<h5>Endereço</h5>
+				<hr>
+				<div class="row">
+					<div class="col-2">
+						<div class="form-group">
+							<label class="control-label">CEP</label>
+							<input type="text" class="form-control" ng-model="empreendimento.cep" ng-blur="loadEnderecoByCEP()">
+						</div>
+					</div>
+					<div class="col-6">
+						<div class="form-group">
+							<label class="control-label">Logradouro</label>
+							<input type="text" class="form-control" ng-model="empreendimento.logradouro">
+						</div>
+					</div>
+					<div class="col-1">
+						<div class="form-group">
+							<label class="control-label">Nº</label>
+							<input type="text" class="form-control" ng-model="empreendimento.numero">
+						</div>
+					</div>
+					<div class="col-3">
+						<div class="form-group">
+							<label class="control-label">Bairro</label>
+							<input type="text" class="form-control" ng-model="empreendimento.bairro">
+						</div>
+					</div>
+					<div class="col-4">
+						<div class="form-group">
+							<label class="control-label">Estado</label>
+							<select class="form-control" ng-model="empreendimento.id_estado">
+								<option value="26">São Paulo</option>
+								<option>2</option>
+								<option>3</option>
+								<option>4</option>
+								<option>5</option>
+							</select>
+						</div>
+					</div>
+					<div class="col-4">
+						<div class="form-group">
+							<label class="control-label">Cidade</label>
+							<select class="form-control" ng-model="empreendimento.cidade">
+								<option value="3829">São Paulo</option>
+								<option>2</option>
+								<option>3</option>
+								<option>4</option>
+								<option>5</option>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="card-footer bg-transparent">
+				<div class="clearfix">
+					<div class="float-right">
+						<button class="btn btn-default px-5">Cancelar</button>
+						<button class="btn btn-success px-5">Salvar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
