@@ -40,4 +40,35 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 			});
 		}
 	}
+
+	$scope.saveEmpreendimento = function() {
+		var body = {
+			nome: $scope.empreendimento.nome,
+			descricao: $scope.empreendimento.descricao,
+			cnpj: $scope.empreendimento.cnpj,
+			cep: $scope.empreendimento.cep,
+			endereco: $scope.empreendimento.endereco,
+			numero: $scope.empreendimento.numero,
+			bairro: $scope.empreendimento.bairro,
+			id_estado: $scope.empreendimento.id_estado,
+			id_cidade: $scope.empreendimento.id_cidade,
+			id_segmento: $scope.empreendimento.id_segmento,
+			id_nivel: $scope.empreendimento.id_nivel,
+			id_cliente: $scope.empreendimento.id_cliente
+		};
+
+		$http({
+				method: 'POST',
+				url: baseUrlApi+'/empreendimento',
+				data: body,
+				headers: { 
+					'Content-Type': 'application/json'
+				}
+			}).then(function successCallback(response) {
+				$scope.empreendimento.logradouro = response.data.logradouro;
+				$scope.empreendimento.bairro = response.data.bairro;
+			}, function errorCallback(response) {
+				
+			});
+	}
 });
