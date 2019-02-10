@@ -10,8 +10,8 @@
 
 <div class="card" ng-init="loadEmpreendimento()">
     <div class="card-body">
-        <div class="table-responsive m-t-40">
-            <table id="myTable" class="table table-hover table-sm color-table muted-table">
+        <div class="m-t-40">
+            <table id="myTable" class="table table-hover table-sm color-table muted-table table-bordered">
                 <thead>
                     <tr>
                         <th class="text-center">#</th>
@@ -24,13 +24,22 @@
                     </tr>
                 </thead>
                 <tbody>
+                	<tr ng-show="empreendimentos == []">
+						<td class="text-center" colspan="15">
+							<i class="fa fa-redo-alt fa-spin"></i> Aguarde... Carregando registros!
+						</td>
+					</tr>
+					<tr ng-if="msgEmpreendimentos">
+						<td class="text-center" colspan="15">{{ msgEmpreendimentos }}</td>
+					</tr>
                     <tr ng-repeat="empreendimento in empreendimentos">
                         <td class="text-center">{{ empreendimento.id }}</td>
 						<td>{{ empreendimento.nome }}</td>
 						<td class="text-center">{{ empreendimento.cnpj }}</td>
-						<td>{{ empreendimento.id_cliente }}</td>
-						<td class="text-center">{{ empreendimento.id_segmento }}</td>
-						<td class="text-center">{{ empreendimento.id_nivel }}</td>
+						<td ng-show="empreendimento.Cliente.PessoaFisicas.length > 0">{{ empreendimento.Cliente.PessoaFisicas[0].nome }}</td>
+						<td ng-show="empreendimento.Cliente.PessoaJuridicas.length > 0">{{ empreendimento.Cliente.PessoaJuridicas[0].nome_fantasia }} <small>({{ empreendimento.Cliente.PessoaJuridicas[0].razao_social }})</small></td>
+						<td class="text-center">{{ empreendimento.dsc_segmento }}</td>
+						<td class="text-center">{{ empreendimento.dsc_porte }}</td>
 						<td class="text-center">
 							<button class="btn btn-sm btn-info" ng-click="detailEmpreendimento(empreendimento)"><i class="fa fa-align-justify"></i></button>
 						</td>
@@ -43,17 +52,15 @@
 
 <!-- Modal -->
 <div class="modal fade" id="modal-empreendimento-detail" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-lg" role="document">
+	<div class="modal-dialog modal-xl" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLabel">Detalhes do Empreendimento</h5>
+				<h5 class="modal-title">Informações</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
 			<div class="modal-body">
-				<h5>Informações</h5>
-				<hr>
 				<div class="row">
 					<div class="col-6">
 						<div class="form-group">
@@ -61,39 +68,33 @@
 							<input type="text" class="form-control" ng-model="empreendimentoDetail.id_cliente" ng-disabled="true">
 						</div>
 					</div>
-				</div>
-				<div class="row">
 					<div class="col-6">
 						<div class="form-group">
 							<label class="control-label">Nome</label>
 							<input type="text" class="form-control" ng-model="empreendimentoDetail.nome" ng-disabled="true">
 						</div>
 					</div>
+				</div>
+				<div class="row">
 					<div class="col-3">
 						<div class="form-group">
 							<label class="control-label">CNPJ</label>
 							<input type="text" class="form-control" ng-model="empreendimentoDetail.cnpj" ng-disabled="true">
 						</div>
 					</div>
-				</div>
-				<div class="row">
 					<div class="col-3">
 						<div class="form-group">
 							<label class="control-label">Segmento</label>
-							<select class="form-control" ng-model="empreendimentoDetail.id_segmento" ng-disabled="true">
-								<option value="1">Residência</option>
-								<option value="2">Comércio</option>
-								<option value="3">Indústria</option>
+							<select class="form-control" ng-model="empreendimentoDetail.id_segmento" ng-disabled="true" 
+									ng-options="segmento.id as segmento.dsc for segmento in segmentos">
 							</select>
 						</div>
 					</div>
 					<div class="col-3">
 						<div class="form-group">
 							<label class="control-label">Porte</label>
-							<select class="form-control" ng-model="empreendimentoDetail.id_nivel" ng-disabled="true">
-								<option value="1">Pequeno</option>
-								<option value="2">Médio</option>
-								<option value="3">Grande</option>
+							<select class="form-control" ng-model="empreendimentoDetail.id_porte" ng-disabled="true"
+									ng-options="porte.id as porte.dsc for porte in portes">
 							</select>
 						</div>
 					</div>
@@ -118,7 +119,7 @@
 					<div class="col-8">
 						<div class="form-group">
 							<label class="control-label">Logradouro</label>
-							<input type="text" class="form-control" ng-model="empreendimentoDetail.endereco" ng-disabled="true">
+							<input type="text" class="form-control" ng-model="empreendimentoDetail.logradouro" ng-disabled="true">
 						</div>
 					</div>
 					<div class="col-2">
@@ -138,24 +139,16 @@
 					<div class="col-4">
 						<div class="form-group">
 							<label class="control-label">Estado</label>
-							<select class="form-control" ng-model="empreendimentoDetail.id_estado" ng-disabled="true">
-								<option>São Paulo</option>
-								<option>2</option>
-								<option>3</option>
-								<option>4</option>
-								<option>5</option>
+							<select class="form-control" ng-model="empreendimentoDetail.id_estado" ng-disabled="true"
+									ng-options="estado.cod_ibge as estado.nome for estado in estados">
 							</select>
 						</div>
 					</div>
 					<div class="col-4">
 						<div class="form-group">
 							<label class="control-label">Cidade</label>
-							<select class="form-control" ng-model="empreendimentoDetail.id_cidade" ng-disabled="true">
-								<option>São Paulo</option>
-								<option>2</option>
-								<option>3</option>
-								<option>4</option>
-								<option>5</option>
+							<select class="form-control" ng-model="empreendimentoDetail.id_municipio" ng-disabled="true"
+									ng-options="municipio.cod_ibge as municipio.nome for municipio in municipios">
 							</select>
 						</div>
 					</div>

@@ -26,6 +26,8 @@
     <link href="assets/plugins/vectormap/jquery-jvectormap-2.0.2.css" rel="stylesheet" />
     <!-- Custom CSS -->
     <link href="css/style.css" rel="stylesheet">
+    <!-- toast CSS -->
+    <link href="assets/plugins/toast-master/css/jquery.toast.css" rel="stylesheet">
     <!-- You can change the theme colors from here -->
     <link href="css/colors/megna-dark.css" id="theme" rel="stylesheet">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -752,6 +754,8 @@
     <script src="assets/plugins/vectormap/jquery-jvectormap-2.0.2.min.js"></script>
     <script src="assets/plugins/vectormap/jquery-jvectormap-us-aea-en.js"></script>
     <script src="js/dashboard2.js"></script>
+    <script src="assets/plugins/toast-master/js/jquery.toast.js"></script>
+    <script src="js/toastr.js"></script>
     <!-- ============================================================== -->
     <!-- Style switcher -->
     <!-- ============================================================== -->
