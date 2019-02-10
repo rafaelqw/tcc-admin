@@ -2,13 +2,13 @@
     <div class="col-md-5 col-8 align-self-center">
         <h3 class="text-themecolor">Usuários Cadastrados</h3>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="#!usuario-list">Usuario</a></li>
+            <li class="breadcrumb-item"><a href="#!cliente-list">Cliente</a></li>
             <li class="breadcrumb-item active">Listar</li>
         </ol>
     </div>
 </div>
 
-<div class="card" ng-init="loadUsuario()">
+<div class="card" ng-init="loadCliente()">
     <div class="card-body">
         <div class="table-responsive m-t-40">
             <table id="myTable" class="table table-hover table-sm color-table muted-table">
@@ -24,15 +24,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="usuario in usuarios">
-                        <td class="text-center">{{ usuario.id }}</td>
-						<td>{{ usuario.razão_social }}</td>
-						<td class="text-center">{{ usuario.nome_fantasia }}</td>
-						<td>{{ usuario.cnpj }}</td>
-						<td class="text-center">{{ usuario.inscricao_estadual }}</td>
-						<td class="text-center">{{ usuario.numero_cel }}</td>
+                    <tr ng-repeat="cliente in clientes">
+                        <td class="text-center">{{ cliente.id }}</td>
+						<td>{{ cliente.razão_social }}</td>
+						<td class="text-center">{{ cliente.nome_fantasia }}</td>
+						<td>{{ cliente.cnpj }}</td>
+						<td class="text-center">{{ cliente.inscricao_estadual }}</td>
+						<td class="text-center">{{ cliente.numero_cel }}</td>
 						<td class="text-center">
-							<button class="btn btn-sm btn-info" ng-click="detailUsuario(usuario)"><i class="fa fa-align-justify"></i></button>
+							<button class="btn btn-sm btn-info" ng-click="detailCliente(cliente)"><i class="fa fa-align-justify"></i></button>
 						</td>
                     </tr>
                 </tbody>

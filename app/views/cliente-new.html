@@ -1,0 +1,171 @@
+<div class="row page-titles">
+    <div class="col-md-5 col-8 align-self-center">
+        <h3 class="text-themecolor">Novo Cliente</h3>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#!cliente-list">Cliente</a></li>
+            <li class="breadcrumb-item active">Cadastrar</li>
+        </ol>
+    </div>
+</div>
+<div class="row" ng-init="newCliente()">
+	<div class="col-12">
+		<div class="card">
+			<div class="card-body">
+				<div class="row">
+					<div class="col-6">
+						<h5>Informações</h5>
+						<hr>
+						<div class="row">
+							<div class="col-12">
+								<div class="form-group">
+									<label class="control-label">Razão Social</label>
+									<input type="text" class="form-control" ng-model="cliente.razao_social">
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-12">
+								<div class="form-group">
+									<label class="control-label">Nome Fantasia</label>
+									<input type="text" class="form-control" ng-model="cliente.nome_fantasia">
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-6">
+								<div class="form-group">
+									<label class="control-label">CNPJ</label>
+									<input type="text" class="form-control" ng-model="cliente.cnpj">
+								</div>
+							</div>
+							<div class="col-6">
+								<div class="form-group">
+									<label class="control-label">Inscrição Estadual</label>
+									<input type="text" class="form-control" ng-model="cliente.inscricao_estadual">
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-12">
+								<div class="form-group">
+									<label class="control-label">Email</label>
+									<input type="text" class="form-control" ng-model="cliente.email">
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-6">
+						<h5>Telefone</h5>
+						<hr>
+						<div class="row">
+							<div class="col-4">
+								<div class="form-group">
+									<label class="control-label">DDD</label>
+									<input type="text" class="form-control" ng-model="telefone.ddd">
+								</div>
+							</div>
+							<div class="col-8">
+								<div class="form-group">
+									<label class="control-label">Telefone</label>
+									<input type="text" class="form-control" ng-model="telefone.numero_tel">
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-4">
+								<div class="form-group">
+									<label class="control-label">Tipo</label>
+									<select class="form-control" ng-model="telefone.id_tipo"></select>
+								</div>
+							</div>
+							<div class="col-8">
+								<div class="form-group">
+									<div class="controls">
+										<label class="control-label">&nbsp;</label>
+									</div>
+									<button class="btn btn-success" id="adicionar-telefone" ng-click="addTelefone()">Adicionar</button>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-12">
+								<table class="table table-hover table-sm color-table muted-table">
+					                <thead>
+					                    <tr>
+					                        <th class="text-center">DDD</th>
+											<th class="text-center">Telefone</th>
+											<th class="text-center">Tipo</th>
+					                    </tr>
+					                </thead>
+					                <tbody>
+					                </tbody>
+					            </table>
+							</div>	
+						</div>
+					</div>
+				</div>
+				<h5>Endereço</h5>
+				<hr>
+				<div class="row">
+					<div class="col-2">
+						<div class="form-group">
+							<label class="control-label">CEP</label>
+							<input type="text" class="form-control" ng-model="cliente.cep" ng-blur="loadEnderecoByCEP()">
+						</div>
+					</div>
+					<div class="col-8">					
+						<div class="form-group">
+							<label class="control-label">Logradouro</label>
+							<input type="text" class="form-control" ng-model="cliente.logradouro">
+						</div>
+					</div>
+					<div class="col-2">
+						<div class="form-group">
+							<label class="control-label">Nº</label>
+							<input type="text" class="form-control" ng-model="cliente.numero">
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-4">
+						<div class="form-group">
+							<label class="control-label">Bairro</label>
+							<input type="text" class="form-control" ng-model="cliente.numero">
+						</div>
+					</div>
+					<div class="col-8">
+						<div class="form-group">
+							<label class="control-label">Complemento</label>
+							<input type="text" class="form-control" ng-model="cliente.complemento">
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-4">
+						<div class="form-group">
+							<label class="control-label">Estado</label>
+							<select class="form-control" ng-model="cliente.id_estado">
+							</select>
+						</div>
+					</div>
+					<div class="col-4">
+						<div class="form-group">
+							<label class="control-label">Município</label>
+							<select class="form-control" ng-model="empreendimento.cidade">
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="card-footer bg-transparent">
+				<div class="clearfix">
+					<div class="float-right">
+						<button class="btn btn-secondary">Cancelar</button>
+						<button class="btn btn-success" id="salvar-cliente" ng-click="saveCliente()" 
+								data-loading-text="<i class='fa fa-refresh fa-spin'></i> Salvando, Aguarde...">Salvar
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>

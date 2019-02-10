@@ -383,11 +383,11 @@
                         <li> 
                             <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false">
                                 <i class="mdi mdi-laptop-windows"></i>
-                                <span class="hide-menu">Usuario</span>
+                                <span class="hide-menu">Cliente</span>
                             </a>
                             <ul aria-expanded="false" class="collapse">
-                                <li><a href="#!usuario-new">Cadastrar</a></li>
-                                <li><a href="#!usuario-list">Listar</a></li>
+                                <li><a href="#!cliente-new">Cadastrar</a></li>
+                                <li><a href="#!cliente-list">Listar</a></li>
                                 <!-- <li><a href="https://wrappixel.com/demos/admin-templates/material-pro/minisidebar/index.html">Minisidebar</a></li>
                                 <li><a href="https://wrappixel.com/demos/admin-templates/material-pro/horizontal/index2.html">Horizontal</a></li>
                                 <li><a href="index3.html">Material Version</a></li>

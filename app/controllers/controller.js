@@ -42,6 +42,10 @@ app.controller('DashboardCtrl', function($scope){
 	$scope.title = 'Bem-vindo, esta é nossa página principal!';
 });
 
+app.controller('ClienteCtrl', function($scope, $http){
+	
+});
+
 app.controller('EmpreendimentoCtrl', function($scope, $http){
 	$scope.segmentos = [
 		{ id: 1, dsc: "Residência" },
@@ -173,7 +177,8 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 			id_municipio: $scope.empreendimento.id_municipio,
 			id_segmento: $scope.empreendimento.id_segmento,
 			id_porte: $scope.empreendimento.id_porte,
-			id_cliente: $scope.empreendimento.id_cliente
+			id_cliente: $scope.empreendimento.id_cliente,
+			complemento: $scope.empreendimento.complemento
 		};
 
 		$http({
