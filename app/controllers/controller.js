@@ -2,10 +2,11 @@ var baseUrlApi = "http://localhost:7000";
 
 app.controller('LoginCtrl', function($scope, $window, $http){
 	$scope.dataLogin = {
-		email: "",
+		email: sessionStorage.getItem('tcc-admin.user.email') ? JSON.parse(sessionStorage.getItem('tcc-admin.user.email')) : "",
 		senha: ""
 	};
 	$scope.login = function() {
+		sessionStorage.removeItem('tcc-admin.user.token');
 		$http({
 				method: 'POST',
 				url: 'http://localhost:7000/autenticacao',
@@ -23,7 +24,18 @@ app.controller('LoginCtrl', function($scope, $window, $http){
 						icon: 'success',
 						hideAfter: 3500
 					});
+					sessionStorage.setItem('tcc-admin.user.token', JSON.stringify(response.data.token));
+					sessionStorage.setItem('tcc-admin.user.email', JSON.stringify($scope.dataLogin.email));
 					window.location = 'index.php';
+				} else {
+					$.toast({
+						heading: 'Atenção!',
+						text: response.data.msg,
+						position: 'top-right',
+						loaderBg:'#dc3545',
+						icon: 'error',
+						hideAfter: 3500
+					});
 				}
 			}, function errorCallback(response) {
 				$.toast({
@@ -47,6 +59,8 @@ app.controller('ClienteCtrl', function($scope, $http){
 });
 
 app.controller('EmpreendimentoCtrl', function($scope, $http){
+	var token = JSON.parse(sessionStorage.getItem('tcc-admin.user.token'));
+
 	$scope.segmentos = [
 		{ id: 1, dsc: "Residência" },
 		{ id: 2, dsc: "Comércio" },
@@ -71,7 +85,10 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 		$scope.msgEmpreendimentos = null;
 		$http({
 			method: 'GET',
-			url: baseUrlApi+'/empreendimento'
+			url: baseUrlApi+'/empreendimento',
+			headers: {
+				'Authorization': 'Bearer ' +token
+			}
 		}).then(function successCallback(response) {
 			$scope.empreendimentos = response.data;
 			angular.forEach($scope.empreendimentos, function(empreendimento){
@@ -102,6 +119,18 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 		}, function errorCallback(response) {
 			$scope.empreendimentos = null;
 			$scope.msgEmpreendimentos = response.data.msg;
+			if (response.data.erro.name == "TokenExpiredError") {
+				window.location = 'lock-screen.html';
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+			}
 		});
 	}
 
@@ -121,7 +150,10 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 		$scope.msgClientes = null;
 		$http({
 			method: 'GET',
-			url: baseUrlApi+'/cliente'
+			url: baseUrlApi+'/cliente',
+			headers: {
+				'Authorization': 'Bearer ' +token
+			}
 		}).then(function successCallback(response) {
 			$scope.clientes = response.data;
 			angular.forEach($scope.clientes, function(cliente){
@@ -138,6 +170,18 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 		}, function errorCallback(response) {
 			$scope.clientes = null;
 			$scope.msgClientes = response.data.msg;
+			if (response.data.erro.name == "TokenExpiredError") {
+				window.location = 'lock-screen.html';
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+			}
 		});
 	}
 
@@ -147,15 +191,26 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 				method: 'GET',
 				url: 'https://viacep.com.br/ws/'+ $scope.empreendimento.cep +'/json/'
 			}).then(function successCallback(response) {
-				$scope.empreendimento.logradouro = response.data.logradouro;
-				$scope.empreendimento.bairro = response.data.bairro;
-				angular.forEach($scope.estados, function(estado) {
-					if (estado.uf == response.data.uf){
-						$scope.empreendimento.id_estado = estado.cod_ibge;
-						$scope.loadMunicipios(response.data.ibge);
-					}
-				});
-				$('#empNumero').focus();
+				if(response.data.erro){
+					$.toast({
+						heading: 'Atenção!',
+						text: 'Erro ao buscar o CEP',
+						position: 'top-right',
+						loaderBg:'#dc3545',
+						icon: 'error',
+						hideAfter: 3500
+					});
+				} else {
+					$scope.empreendimento.logradouro = response.data.logradouro;
+					$scope.empreendimento.bairro = response.data.bairro;
+					angular.forEach($scope.estados, function(estado) {
+						if (estado.uf == response.data.uf){
+							$scope.empreendimento.id_estado = estado.cod_ibge;
+							$scope.loadMunicipios(response.data.ibge);
+						}
+					});
+					$('#empNumero').focus();
+				}
 			}, function errorCallback(response) {
 				
 			});
@@ -186,7 +241,8 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 				url: baseUrlApi+'/empreendimento',
 				data: body,
 				headers: { 
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
+					'Authorization': 'Bearer ' +token
 				}
 			}).then(function successCallback(response) {
 				$scope.empreendimento = {};
@@ -202,14 +258,18 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 				$scope.newEmpreendimento();
 			}, function errorCallback(response) {
 				btn.button('reset');
-				$.toast({
-					heading: 'Atenção!',
-					text: 'Erro ao cadastrar empreendimento',
-					position: 'top-right',
-					loaderBg:'#ff6849',
-					icon: 'success',
-					hideAfter: 3500
-				});
+				if (response.data.erro.name == "TokenExpiredError") {
+					window.location = 'lock-screen.html';
+				} else {
+					$.toast({
+						heading: 'Atenção!',
+						text: response.data.msg,
+						position: 'top-right',
+						loaderBg:'#dc3545',
+						icon: 'error',
+						hideAfter: 3500
+					});
+				}
 			});
 	}
 
@@ -226,11 +286,25 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 	$scope.loadEstados = function() {
 		$http({
 			method: 'GET',
-			url: baseUrlApi+'/estado'
+			url: baseUrlApi+'/estado',
+			headers: {
+				'Authorization': 'Bearer ' +token
+			}
 		}).then(function successCallback(response) {
 			$scope.estados = response.data;
 		}, function errorCallback(response) {
-			
+			if (response.data.erro.name == "TokenExpiredError") {
+				window.location = 'lock-screen.html';
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+			}
 		});
 	}
 
@@ -238,7 +312,10 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 		var id_estado = $scope.empreendimento ? $scope.empreendimento.id_estado : $scope.empreendimentoDetail.id_estado;
 		$http({
 			method: 'GET',
-			url: baseUrlApi+'/municipio/'+ id_estado
+			url: baseUrlApi+'/municipio/'+ id_estado,
+			headers: {
+				'Authorization': 'Bearer ' +token
+			}
 		}).then(function successCallback(response) {
 			$scope.municipios = response.data;
 			if (cod_ibge_municipio) {
@@ -253,7 +330,18 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 				});
 			}
 		}, function errorCallback(response) {
-			
+			if (response.data.erro.name == "TokenExpiredError") {
+				window.location = 'lock-screen.html';
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+			}
 		});
 	}
 
