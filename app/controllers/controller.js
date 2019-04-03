@@ -55,7 +55,79 @@ app.controller('DashboardCtrl', function($scope){
 });
 
 app.controller('ClienteCtrl', function($scope, $http){
-	
+
+	$scope.newCliente = function(){
+
+		$scope.cliente = {
+			tipo_cadastro: "pf"
+		};
+	}
+
+	$scope.saveCliente = function(){
+
+	}
+
+	$scope.loadEstados = function() {
+		$http({
+			method: 'GET',
+			url: baseUrlApi+'/estado',
+			headers: {
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			$scope.estados = response.data;
+		}, function errorCallback(response) {
+			if (response.data.erro.name == "TokenExpiredError") {
+				window.location = 'lock-screen.html';
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+			}
+		});
+	}
+
+	$scope.loadMunicipios = function(cod_ibge_municipio) {
+		var id_estado = $scope.cliente ? $scope.cliente.id_estado : $scope.clienteDetail.id_estado;
+		$http({
+			method: 'GET',
+			url: baseUrlApi+'/municipio/'+ id_estado,
+			headers: {
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			$scope.municipios = response.data;
+			if (cod_ibge_municipio) {
+				angular.forEach($scope.municipios, function(municipio) {
+					if ($scope.cliente) {
+						if (municipio.cod_ibge == parseInt(cod_ibge_municipio))
+							$scope.cliente.id_municipio = municipio.cod_ibge;
+					} else if ($scope.clienteDetail) {
+						if (municipio.cod_ibge == parseInt(cod_ibge_municipio))
+							$scope.clienteDetail.id_municipio = municipio.cod_ibge;
+					}
+				});
+			}
+		}, function errorCallback(response) {
+			if (response.data.erro.name == "TokenExpiredError") {
+				window.location = 'lock-screen.html';
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+			}
+		});
+	}
 });
 
 app.controller('EmpreendimentoCtrl', function($scope, $http){
@@ -116,11 +188,14 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 						break;
 				}
 			});
+			this.refreshToken($http);
 		}, function errorCallback(response) {
 			$scope.empreendimentos = null;
 			$scope.msgEmpreendimentos = response.data.msg;
-			if (response.data.erro.name == "TokenExpiredError") {
-				window.location = 'lock-screen.html';
+			if (response.data.erro) {
+				if (response.data.erro.name == "TokenExpiredError") {
+					window.location = 'lock-screen.html';
+				}
 			} else {
 				$.toast({
 					heading: 'Atenção!',
@@ -130,11 +205,12 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 					icon: 'error',
 					hideAfter: 3500
 				});
+				this.refreshToken($http);
 			}
 		});
 	}
 
-	$scope.newEmpreendimento = function(argument) {
+	$scope.newEmpreendimento = function() {
 		$scope.loadEstados();
 		$scope.loadClientes();
 		$scope.empreendimento = {};
@@ -187,33 +263,16 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 
 	$scope.loadEnderecoByCEP = function(){
 		if ($scope.empreendimento.cep.length >= 8) {
-			$http({
-				method: 'GET',
-				url: 'https://viacep.com.br/ws/'+ $scope.empreendimento.cep +'/json/'
-			}).then(function successCallback(response) {
-				if(response.data.erro){
-					$.toast({
-						heading: 'Atenção!',
-						text: 'Erro ao buscar o CEP',
-						position: 'top-right',
-						loaderBg:'#dc3545',
-						icon: 'error',
-						hideAfter: 3500
-					});
-				} else {
-					$scope.empreendimento.logradouro = response.data.logradouro;
-					$scope.empreendimento.bairro = response.data.bairro;
-					angular.forEach($scope.estados, function(estado) {
-						if (estado.uf == response.data.uf){
-							$scope.empreendimento.id_estado = estado.cod_ibge;
-							$scope.loadMunicipios(response.data.ibge);
-						}
-					});
-					$('#empNumero').focus();
+			var endereco = loadEnderecoByCEP($http, $scope.empreendimento.cep);
+			$scope.empreendimento.logradouro = endereco.logradouro;
+			$scope.empreendimento.bairro = endereco.bairro;
+			angular.forEach($scope.estados, function(estado) {
+				if (estado.uf == endereco.uf){
+					$scope.empreendimento.id_estado = estado.cod_ibge;
+					$scope.loadMunicipios(endereco.ibge);
 				}
-			}, function errorCallback(response) {
-				
 			});
+			$('#empNumero').focus();
 		}
 	}
 
@@ -344,5 +403,40 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 			}
 		});
 	}
-
 });
+
+async function loadEnderecoByCEP($http, cep){
+	$http({
+		method: 'GET',
+		url: 'https://viacep.com.br/ws/'+ cep +'/json/'
+	}).then(function successCallback(response) {
+		if(response.data.erro){
+			$.toast({
+				heading: 'Atenção!',
+				text: 'Erro ao buscar o CEP',
+				position: 'top-right',
+				loaderBg:'#dc3545',
+				icon: 'error',
+				hideAfter: 3500
+			});
+		} else {
+			return response.data;
+		}
+	}, function errorCallback(response) {
+		
+	});
+}
+
+function refreshToken($http){
+	var token = JSON.parse(sessionStorage.getItem('tcc-admin.user.token'));
+	$http({
+			method: 'POST',
+			url: 'http://localhost:7000/autenticacao/refresh-token',
+			headers: { 
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			sessionStorage.setItem('tcc-admin.user.token', JSON.stringify(response.data.token))
+		}, function errorCallback(response) { });
+}

@@ -18,6 +18,21 @@
 						<div class="row">
 							<div class="col-12">
 								<div class="form-group">
+									<label class="control-label">Tipo Cadastro</label>
+									<label class="custom-control custom-radio">
+                                        <input name="tipoCadastro" type="radio" class="custom-control-input" value="pf" ng-model="cliente.tipo_cadastro">
+                                        <span class="custom-control-label">Pessoa Física</span>
+                                    </label>
+                                    <label class="custom-control custom-radio">
+                                        <input name="tipoCadastro" type="radio" class="custom-control-input" value="pj" ng-model="cliente.tipo_cadastro">
+                                        <span class="custom-control-label">Pessoa Jurídica</span>
+                                    </label>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-12">
+								<div class="form-group">
 									<label class="control-label">Razão Social</label>
 									<input type="text" class="form-control" ng-model="cliente.razao_social">
 								</div>
@@ -144,7 +159,7 @@
 					<div class="col-4">
 						<div class="form-group">
 							<label class="control-label">Estado</label>
-							<select class="form-control" ng-model="cliente.id_estado">
+							<select class="form-control" ng-model="cliente.id_estado" ng-change="loadMunicipios()">
 							</select>
 						</div>
 					</div>
