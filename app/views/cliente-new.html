@@ -145,7 +145,7 @@
 					<div class="col-4">
 						<div class="form-group">
 							<label class="control-label">Bairro</label>
-							<input type="text" class="form-control" ng-model="cliente.numero">
+							<input type="text" class="form-control" ng-model="cliente.bairro">
 						</div>
 					</div>
 					<div class="col-8">
@@ -159,14 +159,14 @@
 					<div class="col-4">
 						<div class="form-group">
 							<label class="control-label">Estado</label>
-							<select class="form-control" ng-model="cliente.id_estado" ng-change="loadMunicipios()">
+							<select class="form-control" ng-model="cliente.id_estado" ng-options="estado.cod_ibge as estado.nome for estado in estados" ng-change="loadMunicipios()">
 							</select>
 						</div>
 					</div>
 					<div class="col-4">
 						<div class="form-group">
 							<label class="control-label">Município</label>
-							<select class="form-control" ng-model="empreendimento.cidade">
+							<select class="form-control" ng-model="cliente.id_municipio" ng-options="municipio.cod_ibge as municipio.nome for municipio in municipios">
 							</select>
 						</div>
 					</div>

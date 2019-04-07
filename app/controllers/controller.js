@@ -55,16 +55,81 @@ app.controller('DashboardCtrl', function($scope){
 });
 
 app.controller('ClienteCtrl', function($scope, $http){
+	var token = JSON.parse(sessionStorage.getItem('tcc-admin.user.token'));
 
 	$scope.newCliente = function(){
-
 		$scope.cliente = {
 			tipo_cadastro: "pf"
 		};
+		$scope.loadEstados();
 	}
 
 	$scope.saveCliente = function(){
+		var btn = $('#salvar-cliente');
+		btn.button('loading');
+		var body = {
+			email: $scope.cliente.email,
+			cep: $scope.cliente.cep,
+			logradouro: $scope.cliente.logradouro,
+			numero: $scope.cliente.numero,
+			bairro: $scope.cliente.bairro,
+			id_estado: $scope.cliente.id_estado,
+			id_municipio: $scope.cliente.id_municipio,
+			complemento: $scope.cliente.complemento,
+			id_segmento: $scope.cliente.id_segmento,
+			id_porte: $scope.cliente.id_porte,
+			tipo_cadastro: $scope.cliente.tipo_cadastro,
+			/* Cliente Pessoal Física */
+			nome: $scope.cliente.nome,
+			cpf: $scope.cliente.cpf,
+			rg: $scope.cliente.rg,
+			data_nascimento: $scope.cliente.data_nascimento,
+			sexo: $scope.cliente.sexo,
+			/* Cliente Pessoa Jurídica */
+			nome_fantasia: $scope.cliente.nome_fantasia,
+			razao_social: $scope.cliente.razao_social,
+			cnpj: $scope.cliente.cnpj,
+			inscricao_estadual: $scope.cliente.inscricao_estadual,
+			telefones: []
+		};
 
+		$http({
+			method: 'POST',
+			url: baseUrlApi+'/cliente',
+			data: body,
+			headers: { 
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			$scope.cliente = {
+				tipo_cadastro: "pf"
+			};
+			btn.button('reset');
+			$.toast({
+				heading: 'Sucesso!',
+				text: response.data.msg,
+				position: 'top-right',
+				loaderBg:'#ff6849',
+				icon: 'success',
+				hideAfter: 3500
+			});
+			$scope.newEmpreendimento();
+		}, function errorCallback(response) {
+			btn.button('reset');
+			if (response.data.erro.name == "TokenExpiredError") {
+				window.location = 'lock-screen.html';
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+			}
+		});
 	}
 
 	$scope.loadEstados = function() {
@@ -296,40 +361,40 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 		};
 
 		$http({
-				method: 'POST',
-				url: baseUrlApi+'/empreendimento',
-				data: body,
-				headers: { 
-					'Content-Type': 'application/json',
-					'Authorization': 'Bearer ' +token
-				}
-			}).then(function successCallback(response) {
-				$scope.empreendimento = {};
-				btn.button('reset');
+			method: 'POST',
+			url: baseUrlApi+'/empreendimento',
+			data: body,
+			headers: { 
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			$scope.empreendimento = {};
+			btn.button('reset');
+			$.toast({
+				heading: 'Sucesso!',
+				text: response.data.msg,
+				position: 'top-right',
+				loaderBg:'#ff6849',
+				icon: 'success',
+				hideAfter: 3500
+			});
+			$scope.newEmpreendimento();
+		}, function errorCallback(response) {
+			btn.button('reset');
+			if (response.data.erro.name == "TokenExpiredError") {
+				window.location = 'lock-screen.html';
+			} else {
 				$.toast({
-					heading: 'Sucesso!',
+					heading: 'Atenção!',
 					text: response.data.msg,
 					position: 'top-right',
-					loaderBg:'#ff6849',
-					icon: 'success',
+					loaderBg:'#dc3545',
+					icon: 'error',
 					hideAfter: 3500
 				});
-				$scope.newEmpreendimento();
-			}, function errorCallback(response) {
-				btn.button('reset');
-				if (response.data.erro.name == "TokenExpiredError") {
-					window.location = 'lock-screen.html';
-				} else {
-					$.toast({
-						heading: 'Atenção!',
-						text: response.data.msg,
-						position: 'top-right',
-						loaderBg:'#dc3545',
-						icon: 'error',
-						hideAfter: 3500
-					});
-				}
-			});
+			}
+		});
 	}
 
 	$scope.addCliente = function(cliente) {
