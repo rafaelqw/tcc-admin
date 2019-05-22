@@ -408,7 +408,7 @@
                                 <li><a href="https://wrappixel.com/demos/admin-templates/material-pro/material-rtl/index4.html">RTL Version</a></li> -->
                             </ul>
                         </li>
-                        <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Apps</span></a>
+                        <!-- <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Apps</span></a>
                             <ul aria-expanded="false" class="collapse">
                                 <li><a href="app-calendar.html">Calendar</a></li>
                                 <li><a href="app-chat.html">Chat app</a></li>
@@ -596,7 +596,7 @@
                                 </li>
                                 <li><a href="#">item 1.4</a></li>
                             </ul>
-                        </li>
+                        </li> -->
                     </ul>
                 </nav>
                 <!-- End Sidebar navigation -->

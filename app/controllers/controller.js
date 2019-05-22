@@ -9,7 +9,7 @@ app.controller('LoginCtrl', function($scope, $window, $http){
 		sessionStorage.removeItem('tcc-admin.user.token');
 		$http({
 				method: 'POST',
-				url: 'http://localhost:7000/autenticacao',
+				url: baseUrlApi+'/autenticacao',
 				data: $scope.dataLogin,
 				headers: { 
 					'Content-Type': 'application/json'
@@ -56,10 +56,48 @@ app.controller('DashboardCtrl', function($scope){
 
 app.controller('ClienteCtrl', function($scope, $http){
 	var token = JSON.parse(sessionStorage.getItem('tcc-admin.user.token'));
+	$scope.tipos_telefone = [
+		{ id: 1, dsc: "FIXO" },
+		{ id: 2, dsc: "CELULAR" }
+	];
+
+	$scope.loadCliente = function() {
+		$scope.clientes = [];
+		$scope.msgclientes = null;
+		$http({
+			method: 'GET',
+			url: baseUrlApi+'/cliente',
+			headers: {
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			$scope.clientes = response.data;
+			this.refreshToken($http);
+		}, function errorCallback(response) {
+			$scope.clientes = null;
+			$scope.msgClientes = response.data.msg;
+			if (response.data.erro) {
+				if (response.data.erro.name == "TokenExpiredError") {
+					window.location = 'lock-screen.html';
+				}
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+				this.refreshToken($http);
+			}
+		});
+	}
 
 	$scope.newCliente = function(){
 		$scope.cliente = {
-			tipo_cadastro: "pf"
+			tipo_cadastro: "pf",
+			telefones: []
 		};
 		$scope.loadEstados();
 	}
@@ -89,8 +127,7 @@ app.controller('ClienteCtrl', function($scope, $http){
 			nome_fantasia: $scope.cliente.nome_fantasia,
 			razao_social: $scope.cliente.razao_social,
 			cnpj: $scope.cliente.cnpj,
-			inscricao_estadual: $scope.cliente.inscricao_estadual,
-			telefones: []
+			inscricao_estadual: $scope.cliente.inscricao_estadual
 		};
 
 		$http({
@@ -114,7 +151,7 @@ app.controller('ClienteCtrl', function($scope, $http){
 				icon: 'success',
 				hideAfter: 3500
 			});
-			$scope.newEmpreendimento();
+			$scope.newCliente();
 		}, function errorCallback(response) {
 			btn.button('reset');
 			if (response.data.erro.name == "TokenExpiredError") {
@@ -192,6 +229,47 @@ app.controller('ClienteCtrl', function($scope, $http){
 				});
 			}
 		});
+	}
+
+	$scope.loadEnderecoByCEP = function(){
+		if ($scope.cliente.cep.length >= 8) {
+			$http({
+				method: 'GET',
+				url: 'https://viacep.com.br/ws/'+ $scope.cliente.cep +'/json/'
+			}).then(function successCallback(response) {
+				if(response.data.erro){
+					$.toast({
+						heading: 'Atenção!',
+						text: 'Erro ao buscar o CEP',
+						position: 'top-right',
+						loaderBg:'#dc3545',
+						icon: 'error',
+						hideAfter: 3500
+					});
+				} else {
+					$scope.cliente.logradouro = response.data.logradouro;
+					$scope.cliente.bairro = response.data.bairro;
+					angular.forEach($scope.estados, function(estado) {
+						if (estado.uf == response.data.uf){
+							$scope.cliente.id_estado = estado.cod_ibge;
+							$scope.loadMunicipios(response.data.ibge);
+						}
+					});
+					$('#cliNumero').focus();
+				}
+			}, function errorCallback(response) {
+				
+			});
+		}
+	}
+
+	$scope.addTelefone = function() {
+		$scope.cliente.telefones.push($scope.telefone);
+		$scope.telefone = {};
+	}
+
+	$scope.delTelefone = function(telefone) {
+		$scope.cliente.telefones.splice(telefone, 1);
 	}
 });
 
@@ -328,16 +406,33 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 
 	$scope.loadEnderecoByCEP = function(){
 		if ($scope.empreendimento.cep.length >= 8) {
-			var endereco = loadEnderecoByCEP($http, $scope.empreendimento.cep);
-			$scope.empreendimento.logradouro = endereco.logradouro;
-			$scope.empreendimento.bairro = endereco.bairro;
-			angular.forEach($scope.estados, function(estado) {
-				if (estado.uf == endereco.uf){
-					$scope.empreendimento.id_estado = estado.cod_ibge;
-					$scope.loadMunicipios(endereco.ibge);
+			$http({
+				method: 'GET',
+				url: 'https://viacep.com.br/ws/'+ $scope.empreendimento.cep +'/json/'
+			}).then(function successCallback(response) {
+				if(response.data.erro){
+					$.toast({
+						heading: 'Atenção!',
+						text: 'Erro ao buscar o CEP',
+						position: 'top-right',
+						loaderBg:'#dc3545',
+						icon: 'error',
+						hideAfter: 3500
+					});
+				} else {
+					$scope.empreendimento.logradouro = response.data.logradouro;
+					$scope.empreendimento.bairro = response.data.bairro;
+					angular.forEach($scope.estados, function(estado) {
+						if (estado.uf == response.data.uf){
+							$scope.empreendimento.id_estado = estado.cod_ibge;
+							$scope.loadMunicipios(response.data.ibge);
+						}
+					});
+					$('#empNumero').focus();
 				}
+			}, function errorCallback(response) {
+				
 			});
-			$('#empNumero').focus();
 		}
 	}
 
@@ -470,33 +565,11 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 	}
 });
 
-async function loadEnderecoByCEP($http, cep){
-	$http({
-		method: 'GET',
-		url: 'https://viacep.com.br/ws/'+ cep +'/json/'
-	}).then(function successCallback(response) {
-		if(response.data.erro){
-			$.toast({
-				heading: 'Atenção!',
-				text: 'Erro ao buscar o CEP',
-				position: 'top-right',
-				loaderBg:'#dc3545',
-				icon: 'error',
-				hideAfter: 3500
-			});
-		} else {
-			return response.data;
-		}
-	}, function errorCallback(response) {
-		
-	});
-}
-
 function refreshToken($http){
 	var token = JSON.parse(sessionStorage.getItem('tcc-admin.user.token'));
 	$http({
 			method: 'POST',
-			url: 'http://localhost:7000/autenticacao/refresh-token',
+			url: baseUrlApi+'/autenticacao/refresh-token',
 			headers: { 
 				'Content-Type': 'application/json',
 				'Authorization': 'Bearer ' +token

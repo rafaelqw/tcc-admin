@@ -30,33 +30,77 @@
 								</div>
 							</div>
 						</div>
-						<div class="row">
-							<div class="col-12">
-								<div class="form-group">
-									<label class="control-label">Razão Social</label>
-									<input type="text" class="form-control" ng-model="cliente.razao_social">
+						<div ng-if="cliente.tipo_cadastro == 'pf'">
+							<div class="row">
+								<div class="col-12">
+									<div class="form-group">
+										<label class="control-label">Nome</label>
+										<input type="text" class="form-control" ng-model="cliente.nome">
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-6">
+									<div class="form-group">
+										<label class="control-label">RG</label>
+										<input type="text" class="form-control" ng-model="cliente.rg">
+									</div>
+								</div>
+								<div class="col-6">
+									<div class="form-group">
+										<label class="control-label">CPF</label>
+										<input type="text" class="form-control" ng-model="cliente.cpf">
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-6">
+									<div class="form-group">
+										<label class="control-label">Data de Nascimento</label>
+										<input type="text" class="form-control" ng-model="cliente.data_nascimento">
+									</div>
+								</div>
+								<div class="col-6">
+									<div class="form-group">
+										<label class="control-label">Sexo</label>
+										<select class="form-control" ng-model="cliente.sexo">
+											<option value="feminino">Feminino</option>
+											<option value="masculino">Masculino</option>
+											<option value="outro">Outro</option>
+										</select>
+									</div>
 								</div>
 							</div>
 						</div>
-						<div class="row">
-							<div class="col-12">
-								<div class="form-group">
-									<label class="control-label">Nome Fantasia</label>
-									<input type="text" class="form-control" ng-model="cliente.nome_fantasia">
+						<div ng-if="cliente.tipo_cadastro == 'pj'">
+							<div class="row">
+								<div class="col-12">
+									<div class="form-group">
+										<label class="control-label">Razão Social</label>
+										<input type="text" class="form-control" ng-model="cliente.razao_social">
+									</div>
 								</div>
 							</div>
-						</div>
-						<div class="row">
-							<div class="col-6">
-								<div class="form-group">
-									<label class="control-label">CNPJ</label>
-									<input type="text" class="form-control" ng-model="cliente.cnpj">
+							<div class="row">
+								<div class="col-12">
+									<div class="form-group">
+										<label class="control-label">Nome Fantasia</label>
+										<input type="text" class="form-control" ng-model="cliente.nome_fantasia">
+									</div>
 								</div>
 							</div>
-							<div class="col-6">
-								<div class="form-group">
-									<label class="control-label">Inscrição Estadual</label>
-									<input type="text" class="form-control" ng-model="cliente.inscricao_estadual">
+							<div class="row">
+								<div class="col-6">
+									<div class="form-group">
+										<label class="control-label">CNPJ</label>
+										<input type="text" class="form-control" ng-model="cliente.cnpj">
+									</div>
+								</div>
+								<div class="col-6">
+									<div class="form-group">
+										<label class="control-label">Inscrição Estadual</label>
+										<input type="text" class="form-control" ng-model="cliente.inscricao_estadual">
+									</div>
 								</div>
 							</div>
 						</div>
@@ -90,7 +134,7 @@
 							<div class="col-4">
 								<div class="form-group">
 									<label class="control-label">Tipo</label>
-									<select class="form-control" ng-model="telefone.id_tipo"></select>
+									<select class="form-control" ng-model="telefone.id_tipo" ng-options="tipo_tel.id as tipo_tel.dsc for tipo_tel in tipos_telefone"></select>
 								</div>
 							</div>
 							<div class="col-8">
@@ -110,9 +154,20 @@
 					                        <th class="text-center">DDD</th>
 											<th class="text-center">Telefone</th>
 											<th class="text-center">Tipo</th>
+											<th></th>
 					                    </tr>
 					                </thead>
 					                <tbody>
+					                	<tr ng-repeat="telefone in cliente.telefones">
+					                		<td class="text-center">({{ telefone.ddd }})</td>
+					                		<td class="text-center">{{ telefone.numero_tel }}</td>
+					                		<td class="text-center">{{ telefone.id_tipo == 1 ? 'FIXO' : 'CELULAR' }}</td>
+					                		<td class="text-center">
+					                			<button class="btn btn-danger btn-xs" ng-click="delTelefone($index)">
+					                				<i class="fa fa-trash"></i>
+					                			</button>
+					                		</td>
+					                	</tr>
 					                </tbody>
 					            </table>
 							</div>	
@@ -125,7 +180,7 @@
 					<div class="col-2">
 						<div class="form-group">
 							<label class="control-label">CEP</label>
-							<input type="text" class="form-control" ng-model="cliente.cep" ng-blur="loadEnderecoByCEP()">
+							<input type="text" class="form-control" ng-model="cliente.cep" ng-keyup="loadEnderecoByCEP()">
 						</div>
 					</div>
 					<div class="col-8">					
@@ -137,7 +192,7 @@
 					<div class="col-2">
 						<div class="form-group">
 							<label class="control-label">Nº</label>
-							<input type="text" class="form-control" ng-model="cliente.numero">
+							<input type="text" class="form-control" ng-model="cliente.numero" id="cliNumero">
 						</div>
 					</div>
 				</div>
@@ -166,7 +221,7 @@
 					<div class="col-4">
 						<div class="form-group">
 							<label class="control-label">Município</label>
-							<select class="form-control" ng-model="cliente.id_municipio" ng-options="municipio.cod_ibge as municipio.nome for municipio in municipios">
+							<select class="form-control" ng-model="cliente.id_municipio" ng-options="municipio.cod_ibge as municipio.nome for municipio in municipios" ng-disabled="!municipios">
 							</select>
 						</div>
 					</div>
