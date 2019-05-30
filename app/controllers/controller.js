@@ -61,6 +61,35 @@ app.controller('ClienteCtrl', function($scope, $http){
 		{ id: 2, dsc: "CELULAR" }
 	];
 
+	$scope.maskDate = function() {
+		$("input[id*='data_nascimento']").inputmask({
+			mask: ['99/99/9999'],
+			keepStatic: true
+		});
+	}
+
+	$scope.maskCpf = function() {
+		$("input[id*='cpf']").inputmask({
+			mask: ['999.999.999-99'],
+			keepStatic: true
+		});
+	}
+
+	$scope.maskCnpj = function() {
+		$("input[id*='cnpj']").inputmask({
+			mask: ['99.999.999/9999-99'],
+			keepStatic: true
+		});
+	}
+
+	$scope.maskRG = function() {
+		$("input[id*='rg']").inputmask({
+			mask: ['99.999.999-9'],
+			keepStatic: true
+		});
+	}
+
+
 	$scope.loadCliente = function() {
 		$scope.clientes = [];
 		$scope.msgclientes = null;
@@ -117,17 +146,18 @@ app.controller('ClienteCtrl', function($scope, $http){
 			id_segmento: $scope.cliente.id_segmento,
 			id_porte: $scope.cliente.id_porte,
 			tipo_cadastro: $scope.cliente.tipo_cadastro,
-			/* Cliente Pessoal Física */
+			/* Cliente Pessoa Física */
 			nome: $scope.cliente.nome,
 			cpf: $scope.cliente.cpf,
 			rg: $scope.cliente.rg,
-			data_nascimento: $scope.cliente.data_nascimento,
+			data_nascimento: moment($scope.cliente.data_nascimento, 'DD/MM/YYYY').format('YYYY-MM-DD'),
 			sexo: $scope.cliente.sexo,
 			/* Cliente Pessoa Jurídica */
 			nome_fantasia: $scope.cliente.nome_fantasia,
 			razao_social: $scope.cliente.razao_social,
 			cnpj: $scope.cliente.cnpj,
-			inscricao_estadual: $scope.cliente.inscricao_estadual
+			inscricao_estadual: $scope.cliente.inscricao_estadual,
+			telefones: $scope.cliente.telefones
 		};
 
 		$http({
@@ -288,11 +318,23 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 		{ id: 3, dsc: "Grande" },
 	];
 
+	$scope.maskCnpj = function() {
+		$("input[id*='cnpj']").inputmask({
+			mask: ['99.999.999/9999-99'],
+			keepStatic: true
+		});
+	}
+
 	$scope.detailEmpreendimento = function(item) {
 		$scope.empreendimentoDetail = item;
 		$scope.loadEstados();
 		$scope.loadMunicipios($scope.empreendimentoDetail.id_estado);
 		$('#modal-empreendimento-detail').modal('show');
+		if (($scope.empreendimentoDetail.Cliente.PessoaFisicas != null) && $scope.empreendimentoDetail.Cliente.PessoaFisicas.length > 0) {
+			$scope.empreendimentoDetail.nome_cliente = $scope.empreendimentoDetail.Cliente.PessoaFisicas[0].nome;
+		} else {
+			$scope.empreendimentoDetail.nome_cliente = $scope.empreendimentoDetail.Cliente.PessoaJuridicas[0].nome_fantasia+"("+ $scope.empreendimentoDetail.Cliente.PessoaJuridicas[0].razao_social +")";
+		}
 	}
 
 	$scope.loadEmpreendimento = function() {

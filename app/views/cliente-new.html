@@ -43,13 +43,13 @@
 								<div class="col-6">
 									<div class="form-group">
 										<label class="control-label">RG</label>
-										<input type="text" class="form-control" ng-model="cliente.rg">
+										<input type="text" class="form-control" ng-model="cliente.rg" id="rg" ng-change="maskRG()">
 									</div>
 								</div>
 								<div class="col-6">
 									<div class="form-group">
 										<label class="control-label">CPF</label>
-										<input type="text" class="form-control" ng-model="cliente.cpf">
+										<input type="text" class="form-control" ng-model="cliente.cpf" id="cpf" ng-change="maskCpf()">
 									</div>
 								</div>
 							</div>
@@ -57,7 +57,7 @@
 								<div class="col-6">
 									<div class="form-group">
 										<label class="control-label">Data de Nascimento</label>
-										<input type="text" class="form-control" ng-model="cliente.data_nascimento">
+										<input type="text" class="form-control" ng-model="cliente.data_nascimento" id="data_nascimento" ng-change="maskDate()">
 									</div>
 								</div>
 								<div class="col-6">
@@ -93,7 +93,7 @@
 								<div class="col-6">
 									<div class="form-group">
 										<label class="control-label">CNPJ</label>
-										<input type="text" class="form-control" ng-model="cliente.cnpj">
+										<input type="text" class="form-control" ng-model="cliente.cnpj" id="cnpj" ng-change="maskCnpj()">
 									</div>
 								</div>
 								<div class="col-6">
