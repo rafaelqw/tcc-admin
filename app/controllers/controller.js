@@ -5,6 +5,23 @@ app.controller('LoginCtrl', function($scope, $window, $http){
 		email: sessionStorage.getItem('tcc-admin.user.email') ? JSON.parse(sessionStorage.getItem('tcc-admin.user.email')) : "",
 		senha: ""
 	};
+
+	$scope.empreendimentos = [];
+
+	$scope.selectEmpreendimento = function(item){
+		sessionStorage.removeItem('tcc-admin.user.id_empreendimento');
+		sessionStorage.setItem('tcc-admin.user.id_empreendimento', JSON.stringify(item.id));
+		$.toast({
+			heading: 'Sucesso!',
+			text: 'Login realizado!',
+			position: 'top-right',
+			loaderBg:'#ff6849',
+			icon: 'success',
+			hideAfter: 3500
+		});
+		window.location = 'index.php';
+	}
+
 	$scope.login = function() {
 		sessionStorage.removeItem('tcc-admin.user.token');
 		$http({
@@ -16,17 +33,12 @@ app.controller('LoginCtrl', function($scope, $window, $http){
 				}
 			}).then(function successCallback(response) {
 				if (response.data.login == true) {
-					$.toast({
-						heading: 'Sucesso!',
-						text: 'Login realizado!',
-						position: 'top-right',
-						loaderBg:'#ff6849',
-						icon: 'success',
-						hideAfter: 3500
-					});
+					$scope.empreendimentos = response.data.empreendimentos;
 					sessionStorage.setItem('tcc-admin.user.token', JSON.stringify(response.data.token));
+					sessionStorage.setItem('tcc-admin.user.id', JSON.stringify(response.data.id_usuario));
+					sessionStorage.setItem('tcc-admin.user.nome', JSON.stringify(response.data.nome_usuario));
 					sessionStorage.setItem('tcc-admin.user.email', JSON.stringify($scope.dataLogin.email));
-					window.location = 'index.php';
+					$('#modal-empreendimentos').modal('show');
 				} else {
 					$.toast({
 						heading: 'Atenção!',
@@ -101,6 +113,19 @@ app.controller('ClienteCtrl', function($scope, $http){
 			}
 		}).then(function successCallback(response) {
 			$scope.clientes = response.data;
+			angular.forEach($scope.clientes, function(cliente) {
+				if ((cliente.PessoaFisicas != null) && cliente.PessoaFisicas.length > 0) {
+					cliente.tipo_cadastro = 'pf';
+					cliente.nome = cliente.PessoaFisicas[0].nome;
+					cliente.cnpjCpf = cliente.PessoaFisicas[0].cpf;
+					cliente.sexo = cliente.PessoaFisicas[0].sexo;
+				} else {
+					cliente.tipo_cadastro = 'pj';
+					cliente.nome = cliente.PessoaJuridicas[0].nome_fantasia+"("+ cliente.PessoaJuridicas[0].razao_social +")";
+					cliente.cnpjCpf = cliente.PessoaJuridicas[0].cnpj;
+					cliente.inscricao_estadual = cliente.PessoaJuridicas[0].inscricao_estadual;
+				}
+			});
 			this.refreshToken($http);
 		}, function errorCallback(response) {
 			$scope.clientes = null;
@@ -121,6 +146,10 @@ app.controller('ClienteCtrl', function($scope, $http){
 				this.refreshToken($http);
 			}
 		});
+	}
+
+	$scope.teste = function() {
+		console.log($scope.clientes);
 	}
 
 	$scope.newCliente = function(){
@@ -293,6 +322,13 @@ app.controller('ClienteCtrl', function($scope, $http){
 		}
 	}
 
+	$scope.detailCliente = function(item) {
+		$scope.clienteDetail = item;
+		$scope.loadEstados();
+		$scope.loadMunicipios($scope.clienteDetail.id_municipio);
+		$('#modal-cliente-detail').modal('show');
+	}
+
 	$scope.addTelefone = function() {
 		$scope.cliente.telefones.push($scope.telefone);
 		$scope.telefone = {};
@@ -328,7 +364,7 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 	$scope.detailEmpreendimento = function(item) {
 		$scope.empreendimentoDetail = item;
 		$scope.loadEstados();
-		$scope.loadMunicipios($scope.empreendimentoDetail.id_estado);
+		$scope.loadMunicipios($scope.empreendimentoDetail.id_municipio);
 		$('#modal-empreendimento-detail').modal('show');
 		if (($scope.empreendimentoDetail.Cliente.PessoaFisicas != null) && $scope.empreendimentoDetail.Cliente.PessoaFisicas.length > 0) {
 			$scope.empreendimentoDetail.nome_cliente = $scope.empreendimentoDetail.Cliente.PessoaFisicas[0].nome;
@@ -605,6 +641,128 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 			}
 		});
 	}
+});
+
+app.controller('UsuarioCtrl', function($scope, $http){
+	var token = JSON.parse(sessionStorage.getItem('tcc-admin.user.token'));
+
+	$scope.detailEmpreendimento = function(item) {
+		$scope.usuarioDetail = item;
+	}
+
+	$scope.loadUsuario = function() {
+		$scope.usuarios = [];
+		$scope.msgUsuarios = null;
+		$http({
+			method: 'GET',
+			url: baseUrlApi+'/autenticacao',
+			headers: {
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			$scope.usuarios = response.data;
+			this.refreshToken($http);
+		}, function errorCallback(response) {
+			$scope.usuarios = null;
+			$scope.msgUsuarios = response.data.msg;
+			if (response.data.erro) {
+				if (response.data.erro.name == "TokenExpiredError") {
+					window.location = 'lock-screen.html';
+				}
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+				this.refreshToken($http);
+			}
+		});
+	}
+
+	$scope.newUsuario = function() {
+		$scope.usuario = {};
+		$scope.municipios = null;
+	}
+
+	$scope.loadEmpreendimento = function() {
+		$scope.empreendimentos = [];
+		$scope.msgEmpreendimentos = null;
+		$http({
+			method: 'GET',
+			url: baseUrlApi+'/empreendimento/id_usuario/'+JSON.parse(sessionStorage.getItem('tcc-admin.user.id')),
+			headers: {
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			$scope.empreendimentos = response.data;
+			angular.forEach($scope.empreendimentos, function(empreendimento){
+				switch(empreendimento.id_segmento){
+					case 1:
+						empreendimento.dsc_segmento = "Residência";
+						break;
+					case 2:
+						empreendimento.dsc_segmento = "Comércio";
+						break;
+					case 3:
+						empreendimento.dsc_segmento = "Indústria";
+						break;
+				}
+
+				switch(empreendimento.id_porte){
+					case 1:
+						empreendimento.dsc_porte = "Pequeno";
+						break;
+					case 2:
+						empreendimento.dsc_porte = "Médio";
+						break;
+					case 3:
+						empreendimento.dsc_porte = "Grande";
+						break;
+				}
+			});
+			this.refreshToken($http);
+		}, function errorCallback(response) {
+			$scope.empreendimentos = null;
+			$scope.msgEmpreendimentos = response.data.msg;
+			if (response.data.erro) {
+				if (response.data.erro.name == "TokenExpiredError") {
+					window.location = 'lock-screen.html';
+				}
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+				this.refreshToken($http);
+			}
+		});
+	}
+
+	$scope.detailEmpreendimento = function(item) {
+		$scope.empreendimentoDetail = item;
+		$scope.loadEstados();
+		$scope.loadMunicipios($scope.empreendimentoDetail.id_municipio);
+		$('#modal-empreendimento-detail').modal('show');
+		if (($scope.empreendimentoDetail.Cliente.PessoaFisicas != null) && $scope.empreendimentoDetail.Cliente.PessoaFisicas.length > 0) {
+			$scope.empreendimentoDetail.nome_cliente = $scope.empreendimentoDetail.Cliente.PessoaFisicas[0].nome;
+		} else {
+			$scope.empreendimentoDetail.nome_cliente = $scope.empreendimentoDetail.Cliente.PessoaJuridicas[0].nome_fantasia+"("+ $scope.empreendimentoDetail.Cliente.PessoaJuridicas[0].razao_social +")";
+		}
+	}
+});
+
+app.controller('DispositivoCtrl', function($scope, $http){
+});
+
+app.controller('SensorCtrl', function($scope, $http){
 });
 
 function refreshToken($http){

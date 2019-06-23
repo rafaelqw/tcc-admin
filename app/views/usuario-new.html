@@ -1,0 +1,205 @@
+<div class="row page-titles">
+    <div class="col-md-5 col-8 align-self-center">
+        <h3 class="text-themecolor">Novo Usuário</h3>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#!usuario-list">Usuário</a></li>
+            <li class="breadcrumb-item active">Cadastrar</li>
+        </ol>
+    </div>
+</div>
+<div class="row" ng-init="newUsuario()">
+	<div class="col-12">
+		<div class="card">
+			<div class="card-body">
+				<div class="row">
+					<div class="col-12">
+						<h5>Informações</h5>
+						<hr>
+						<div class="row">
+							<div class="col-4">
+								<div class="form-group">
+									<label class="control-label">Nome</label>
+									<input type="text" class="form-control" ng-model="usuario.nome">
+								</div>
+							</div>
+							<div class="col-4">
+								<div class="form-group">
+									<label class="control-label">Email</label>
+									<input type="text" class="form-control" ng-model="usuario.email">
+								</div>
+							</div>
+							<div class="col-4">
+								<div class="form-group">
+									<label class="control-label">Senha</label>
+									<input type="password" class="form-control" ng-model="usuario.senha">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-12">
+						<table>
+							<table id="myTable" class="table table-hover table-sm color-table muted-table table-bordered">
+								<thead>
+									<tr>
+										<th class="text-center">#</th>
+										<th>Nome</th>
+										<th class="text-center">CNPJ</th>
+										<th class="text-center">Cliente</th>
+										<th class="text-center">Segmento</th>
+										<th class="text-center">Porte</th>
+										<th class="text-center">Detalhes</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-show="empreendimentos == []">
+										<td class="text-center" colspan="15">
+											<i class="fa fa-redo-alt fa-spin"></i> Aguarde... Carregando registros!
+										</td>
+									</tr>
+									<tr ng-if="msgEmpreendimentos">
+										<td class="text-center" colspan="15">{{ msgEmpreendimentos }}</td>
+									</tr>
+									<tr ng-repeat="empreendimento in empreendimentos">
+										<td class="text-center">{{ empreendimento.id }}</td>
+										<td>{{ empreendimento.nome }}</td>
+										<td class="text-center">{{ empreendimento.cnpj }}</td>
+										<td ng-show="empreendimento.Cliente.PessoaFisicas.length > 0">{{ empreendimento.Cliente.PessoaFisicas[0].nome }}</td>
+										<td ng-show="empreendimento.Cliente.PessoaJuridicas.length > 0">{{ empreendimento.Cliente.PessoaJuridicas[0].nome_fantasia }} <small>({{ empreendimento.Cliente.PessoaJuridicas[0].razao_social }})</small></td>
+										<td class="text-center">{{ empreendimento.dsc_segmento }}</td>
+										<td class="text-center">{{ empreendimento.dsc_porte }}</td>
+										<td class="text-center">
+											<button class="btn btn-sm btn-info" ng-click="detailEmpreendimento(empreendimento)"><i class="fa fa-align-justify"></i></button>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="card-footer bg-transparent">
+				<div class="clearfix">
+					<div class="float-right">
+						<button class="btn btn-secondary" ng-click="loadEmpreendimento()">Cancelar</button>
+						<button class="btn btn-success" id="salvar-usuario" ng-click="saveusuario()" 
+								data-loading-text="<i class='fa fa-refresh fa-spin'></i> Salvando, Aguarde...">Salvar
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modal-empreendimento-detail" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-xl" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Informações</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-6">
+						<div class="form-group">
+							<label class="control-label">Cliente</label>
+							<input type="text" class="form-control" ng-model="empreendimentoDetail.nome_cliente" ng-disabled="true">
+						</div>
+					</div>
+					<div class="col-6">
+						<div class="form-group">
+							<label class="control-label">Nome</label>
+							<input type="text" class="form-control" ng-model="empreendimentoDetail.nome" ng-disabled="true">
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-3">
+						<div class="form-group">
+							<label class="control-label">CNPJ</label>
+							<input type="text" class="form-control" ng-model="empreendimentoDetail.cnpj" ng-disabled="true">
+						</div>
+					</div>
+					<div class="col-3">
+						<div class="form-group">
+							<label class="control-label">Segmento</label>
+							<select class="form-control" ng-model="empreendimentoDetail.id_segmento" ng-disabled="true" 
+									ng-options="segmento.id as segmento.dsc for segmento in segmentos">
+							</select>
+						</div>
+					</div>
+					<div class="col-3">
+						<div class="form-group">
+							<label class="control-label">Porte</label>
+							<select class="form-control" ng-model="empreendimentoDetail.id_porte" ng-disabled="true"
+									ng-options="porte.id as porte.dsc for porte in portes">
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-12">
+						<div class="form-group">
+							<label class="control-label">Descrição</label>
+							<textarea class="form-control" ng-model="empreendimentoDetail.descricao" ng-disabled="true" rows="3"></textarea>
+						</div>
+					</div>
+				</div>
+				<h5>Endereço</h5>
+				<hr>
+				<div class="row">
+					<div class="col-2">
+						<div class="form-group">
+							<label class="control-label">CEP</label>
+							<input type="text" class="form-control" ng-model="empreendimentoDetail.cep" ng-disabled="true">
+						</div>
+					</div>
+					<div class="col-8">
+						<div class="form-group">
+							<label class="control-label">Logradouro</label>
+							<input type="text" class="form-control" ng-model="empreendimentoDetail.logradouro" ng-disabled="true">
+						</div>
+					</div>
+					<div class="col-2">
+						<div class="form-group">
+							<label class="control-label">Nº</label>
+							<input type="text" class="form-control" ng-model="empreendimentoDetail.numero" ng-disabled="true">
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-4">
+						<div class="form-group">
+							<label class="control-label">Bairro</label>
+							<input type="text" class="form-control" ng-model="empreendimentoDetail.bairro" ng-disabled="true">
+						</div>
+					</div>
+					<div class="col-4">
+						<div class="form-group">
+							<label class="control-label">Estado</label>
+							<select class="form-control" ng-model="empreendimentoDetail.id_estado" ng-disabled="true"
+									ng-options="estado.cod_ibge as estado.nome for estado in estados">
+							</select>
+						</div>
+					</div>
+					<div class="col-4">
+						<div class="form-group">
+							<label class="control-label">Cidade</label>
+							<select class="form-control" ng-model="empreendimentoDetail.id_municipio" ng-disabled="true"
+									ng-options="municipio.cod_ibge as municipio.nome for municipio in municipios">
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+			</div>
+		</div>
+	</div>
+</div>

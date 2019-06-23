@@ -397,6 +397,34 @@
                                 <li><a href="https://wrappixel.com/demos/admin-templates/material-pro/material-rtl/index4.html">RTL Version</a></li> -->
                             </ul>
                         </li>
+                        <li> 
+                            <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false">
+                                <i class="mdi mdi-account"></i>
+                                <span class="hide-menu">Dispositivo</span>
+                            </a>
+                            <ul aria-expanded="false" class="collapse">
+                                <li><a href="#!dispositivo-new">Cadastrar</a></li>
+                                <li><a href="#!dispositivo-list">Listar</a></li>
+                                <!-- <li><a href="https://wrappixel.com/demos/admin-templates/material-pro/minisidebar/index.html">Minisidebar</a></li>
+                                <li><a href="https://wrappixel.com/demos/admin-templates/material-pro/horizontal/index2.html">Horizontal</a></li>
+                                <li><a href="index3.html">Material Version</a></li>
+                                <li><a href="https://wrappixel.com/demos/admin-templates/material-pro/material-rtl/index4.html">RTL Version</a></li> -->
+                            </ul>
+                        </li>
+                        <li> 
+                            <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false">
+                                <i class="mdi mdi-account"></i>
+                                <span class="hide-menu">Sensor</span>
+                            </a>
+                            <ul aria-expanded="false" class="collapse">
+                                <li><a href="#!sensor-new">Cadastrar</a></li>
+                                <li><a href="#!sensor-list">Listar</a></li>
+                                <!-- <li><a href="https://wrappixel.com/demos/admin-templates/material-pro/minisidebar/index.html">Minisidebar</a></li>
+                                <li><a href="https://wrappixel.com/demos/admin-templates/material-pro/horizontal/index2.html">Horizontal</a></li>
+                                <li><a href="index3.html">Material Version</a></li>
+                                <li><a href="https://wrappixel.com/demos/admin-templates/material-pro/material-rtl/index4.html">RTL Version</a></li> -->
+                            </ul>
+                        </li>
                         <!-- <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Apps</span></a>
                             <ul aria-expanded="false" class="collapse">
                                 <li><a href="app-calendar.html">Calendar</a></li>

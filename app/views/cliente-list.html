@@ -16,19 +16,17 @@
                     <tr>
                         <th class="text-center">#</th>
 						<th>Nome</th>
-						<th class="text-center">Razão Social</th>
-						<th class="text-center">Nome Fantasia</th>
-						<th class="text-center">CNPJ</th>
+						<th class="text-center">CNPJ/CPF</th>
 						<th class="text-center">Inscrição Estadual</th>
 						<!-- <th class="text-center">Celular</th> -->
+						<th class="text-center">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="cliente in clientes">
                         <td class="text-center">{{ cliente.id }}</td>
-						<td>{{ cliente.razão_social }}</td>
-						<td class="text-center">{{ cliente.nome_fantasia }}</td>
-						<td>{{ cliente.cnpj }}</td>
+						<td>{{ cliente.nome }}</td>
+						<td class="text-center">{{ cliente.cnpjCpf }}</td>
 						<td class="text-center">{{ cliente.inscricao_estadual }}</td>
 						<!-- <td class="text-center">{{ cliente.numero_cel }}</td> -->
 						<td class="text-center">
@@ -42,11 +40,11 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="modal-empreendimento-detail" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="modal-cliente-detail" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLabel">Detalhes do Empreendimento</h5>
+				<h5 class="modal-title" id="exampleModalLabel">Detalhes do Cliente</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
@@ -57,52 +55,34 @@
 				<div class="row">
 					<div class="col-6">
 						<div class="form-group">
-							<label class="control-label">Cliente</label>
-							<input type="text" class="form-control" ng-model="clienteDetail.id_cliente" ng-disabled="true">
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-6">
-						<div class="form-group">
 							<label class="control-label">Nome</label>
 							<input type="text" class="form-control" ng-model="clienteDetail.nome" ng-disabled="true">
 						</div>
 					</div>
-					<div class="col-3">
+					<div class="col-4">
 						<div class="form-group">
-							<label class="control-label">CNPJ</label>
-							<input type="text" class="form-control" ng-model="clienteDetail.cnpj" ng-disabled="true">
+							<label class="control-label">CNPJ/CPF</label>
+							<input type="text" class="form-control" ng-model="clienteDetail.cnpjCpf" ng-disabled="true">
 						</div>
 					</div>
 				</div>
-				<div class="row">
-					<div class="col-3">
+				<div class="row" ng-show="clienteDetail.tipo_cadastro == 'pf'">
+					<div class="col-4">
 						<div class="form-group">
-							<label class="control-label">Segmento</label>
-							<select class="form-control" ng-model="clienteDetail.id_segmento" ng-disabled="true">
-								<option value="1">Residência</option>
-								<option value="2">Comércio</option>
-								<option value="3">Indústria</option>
-							</select>
-						</div>
-					</div>
-					<div class="col-3">
-						<div class="form-group">
-							<label class="control-label">Porte</label>
-							<select class="form-control" ng-model="clienteDetail.id_nivel" ng-disabled="true">
-								<option value="1">Pequeno</option>
-								<option value="2">Médio</option>
-								<option value="3">Grande</option>
+							<label class="control-label">Sexo</label>
+							<select class="form-control" ng-model="clienteDetail.sexo" disabled="true">
+								<option value="feminino">Feminino</option>
+								<option value="masculino">Masculino</option>
+								<option value="outro">Outro</option>
 							</select>
 						</div>
 					</div>
 				</div>
-				<div class="row">
-					<div class="col-12">
+				<div class="row" ng-show="clienteDetail.tipo_cadastro == 'pj'">
+					<div class="col-4">
 						<div class="form-group">
-							<label class="control-label">Descrição</label>
-							<textarea class="form-control" ng-model="clienteDetail.descricao" ng-disabled="true" rows="3"></textarea>
+							<label class="control-label">Inscrição Estadual</label>
+							<input type="text" class="form-control" ng-model="clienteDetail.inscricao_estadual" ng-disabled="true">
 						</div>
 					</div>
 				</div>
@@ -118,7 +98,7 @@
 					<div class="col-8">
 						<div class="form-group">
 							<label class="control-label">Logradouro</label>
-							<input type="text" class="form-control" ng-model="clienteDetail.endereco" ng-disabled="true">
+							<input type="text" class="form-control" ng-model="clienteDetail.logradouro" ng-disabled="true">
 						</div>
 					</div>
 					<div class="col-2">
@@ -138,24 +118,16 @@
 					<div class="col-4">
 						<div class="form-group">
 							<label class="control-label">Estado</label>
-							<select class="form-control" ng-model="clienteDetail.id_estado" ng-disabled="true">
-								<option>São Paulo</option>
-								<option>2</option>
-								<option>3</option>
-								<option>4</option>
-								<option>5</option>
+							<select class="form-control" ng-model="clienteDetail.id_estado" ng-disabled="true"
+									ng-options="estado.cod_ibge as estado.nome for estado in estados">
 							</select>
 						</div>
 					</div>
 					<div class="col-4">
 						<div class="form-group">
 							<label class="control-label">Cidade</label>
-							<select class="form-control" ng-model="clienteDetail.id_cidade" ng-disabled="true">
-								<option>São Paulo</option>
-								<option>2</option>
-								<option>3</option>
-								<option>4</option>
-								<option>5</option>
+							<select class="form-control" ng-model="clienteDetail.id_municipio" ng-disabled="true"
+									ng-options="municipio.cod_ibge as municipio.nome for municipio in municipios">
 							</select>
 						</div>
 					</div>
