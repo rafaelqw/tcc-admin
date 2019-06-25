@@ -1,0 +1,115 @@
+<div class="row page-titles">
+    <div class="col-md-5 col-8 align-self-center">
+        <h3 class="text-themecolor">Novo Sensor</h3>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#!sensor-list">Dispositivo</a></li>
+            <li class="breadcrumb-item active">Cadastrar</li>
+        </ol>
+    </div>
+</div>
+<div class="row" ng-init="newCliente()">
+	<div class="col-12">
+		<div class="card">
+			<div class="card-body">
+				<div class="row">
+					<div class="col-12">
+						<h5>Informações</h5>
+                        <hr>
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="form-group">
+                                    <label class="control-label">Nome</label>
+                                    <input type="text" class="form-control" ng-model="sensor.nome">
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="form-group">
+                                    <label class="control-label">Tipo do Sensor</label>
+                                    <select class="form-control" ng-model="sensor.id_tipo_sensor">
+                                        <option ng-repeat="tipo_sensor in tipos_sensores" value="{{ tipo_sensor.id }}">{{ tipo_sensor.tipo_sensor }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="form-group">
+                                    <label class="control-label">Localização</label>
+                                    <input type="text" class="form-control" ng-model="sensor.localizacao">
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label class="control-label">Dispositivo</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" ng-model="sensor.nome_dispositivo" disabled>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-success" type="button" ng-click="showModalDispositivo()"><i class="fa fa-align-justify"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label class="control-label">Descrição</label>
+                                    <textarea class="form-control" ng-model="sensor.descricao" rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+					</div>
+				</div>
+			</div>
+			<div class="card-footer bg-transparent">
+				<div class="clearfix">
+					<div class="float-right">
+						<button class="btn btn-secondary">Cancelar</button>
+						<button class="btn btn-success" id="salvar-cliente" ng-click="saveSensor()"
+                            data-loading-text="<i class='fa fa-refresh fa-spin'></i> Salvando, Aguarde...">Salvar
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+    </div>
+    
+    <!-- Modal -->
+<div class="modal fade" id="modal-dispositivo" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-xl" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Dispositivo</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<table id="myTable" class="table table-hover table-sm color-table muted-table">
+                    <thead>
+                        <tr>
+                            <th class="text-center">#</th>
+                            <th>Nome</th>
+                            <th class="text-center">Descrição</th>
+                            <th class="text-center">Modelo</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="dispositivo in dispositivos">
+                            <td class="text-center">{{ dispositivo.id }}</td>
+                            <td>{{ dispositivo.nome }}</td>
+                            <td>{{ dispositivo.descricao }}</td>
+                            <td class="text-center">{{ dispositivo.modelo }}</td>
+                            <td class="text-center">
+								<button class="btn btn-sm btn-dark" ng-show="dispositivo.selected"><i class="fa fa-check"></i></button>
+								<button class="btn btn-sm btn-success" ng-show="!dispositivo.selected" ng-click="addDispositivo(dispositivo)"><i class="fa fa-check"></i></button>
+							</td>
+                        </tr>
+                    </tbody>
+                </table>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+			</div>
+		</div>
+	</div>
+</div>

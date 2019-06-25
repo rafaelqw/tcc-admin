@@ -844,9 +844,222 @@ app.controller('UsuarioCtrl', function($scope, $http){
 });
 
 app.controller('DispositivoCtrl', function($scope, $http){
+	$scope.id_empreendimento = sessionStorage.getItem('tcc-admin.user.id_empreendimento');
+	var token = JSON.parse(sessionStorage.getItem('tcc-admin.user.token'));
+
+	$scope.loadDispositivo = function() {
+		$scope.dispositivos = [];
+		$http({
+			method: 'GET',
+			url: baseUrlApi+'/dispositivo/empre/' + $scope.id_empreendimento,
+			headers: {
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			$scope.dispositivos = response.data;
+			this.refreshToken($http);
+		}, function errorCallback(response) {
+
+		});
+	}
+
+	$scope.detailDispositivo = function(item) {
+		$scope.dispositivoDetail = item;
+		
+		$('#modal-cliente-detail').modal('show');
+	}
+	
+	$scope.loadModelos = function() {
+		$scope.dispositivos = [];
+		$http({
+			method: 'GET',
+			url: baseUrlApi+'/dispositivo/modelo',
+			headers: {
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			$scope.modelos = response.data;
+			this.refreshToken($http);
+		}, function errorCallback(response) {
+
+		});
+	}
+
+	$scope.saveDispositivo = function(){
+		var btn = $('#salvar-cliente');
+		btn.button('loading');
+		var body = {
+			dispositivo:{
+				nome: $scope.dispositivo.nome,
+				id_modelo: $scope.dispositivo.id_modelo,
+				descricao: $scope.dispositivo.descricao,
+				id_empreendimento: $scope.id_empreendimento
+			}
+		};
+
+		$http({
+			method: 'POST',
+			url: baseUrlApi+'/dispositivo',
+			data: body,
+			headers: { 
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			btn.button('reset');
+			$.toast({
+				heading: 'Sucesso!',
+				text: response.data.msg,
+				position: 'top-right',
+				loaderBg:'#ff6849',
+				icon: 'success',
+				hideAfter: 3500
+			});
+		}, function errorCallback(response) {
+			btn.button('reset');
+			if (response.data.erro.name == "TokenExpiredError") {
+				window.location = 'lock-screen.html';
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+			}
+		});
+	}
+	$scope.loadModelos();
+	$scope.loadDispositivo();
 });
 
 app.controller('SensorCtrl', function($scope, $http){
+	$scope.id_empreendimento = sessionStorage.getItem('tcc-admin.user.id_empreendimento');
+	var token = JSON.parse(sessionStorage.getItem('tcc-admin.user.token'));
+	$scope.sensor = {};
+
+	$scope.loadSensores = function() {
+		$scope.sensores = [];
+		$http({
+			method: 'GET',
+			url: baseUrlApi+'/sensor/empre/' + $scope.id_empreendimento,
+			headers: {
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			$scope.sensores = response.data;
+			this.refreshToken($http);
+		}, function errorCallback(response) {
+
+		});
+	}
+
+	$scope.detailSensor = function(item) {
+		$scope.sensorDetail = item;
+		
+		$('#modal-sensor-detail').modal('show');
+	}
+
+	$scope.loadTipoSensor = function() {
+		$scope.dispositivos = [];
+		$http({
+			method: 'GET',
+			url: baseUrlApi+'/sensor/tipo_sensor',
+			headers: {
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			$scope.tipos_sensores = response.data;
+			this.refreshToken($http);
+		}, function errorCallback(response) {
+
+		});
+	}
+
+	$scope.saveSensor = function(){
+		var btn = $('#salvar-cliente');
+		btn.button('loading');
+		var body = {
+			sensor:{
+				nome: $scope.sensor.nome,
+				id_tipo_sensor: $scope.sensor.id_tipo_sensor,
+				descricao: $scope.sensor.descricao,
+				localizacao: $scope.sensor.localizacao,
+				id_dispositivo: $scope.sensor.id_dispositivo,
+				id_empreendimento: $scope.id_empreendimento
+			}
+		};
+
+		$http({
+			method: 'POST',
+			url: baseUrlApi+'/sensor',
+			data: body,
+			headers: { 
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			btn.button('reset');
+			$.toast({
+				heading: 'Sucesso!',
+				text: response.data.msg,
+				position: 'top-right',
+				loaderBg:'#ff6849',
+				icon: 'success',
+				hideAfter: 3500
+			});
+		}, function errorCallback(response) {
+			btn.button('reset');
+			if (response.data.erro.name == "TokenExpiredError") {
+				window.location = 'lock-screen.html';
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+			}
+		});
+	}
+
+	$scope.showModalDispositivo = function() {
+		$('#modal-dispositivo').modal('show');
+	}
+
+	$scope.loadDispositivo = function() {
+		$scope.dispositivos = [];
+		$http({
+			method: 'GET',
+			url: baseUrlApi+'/dispositivo/empre/' + $scope.id_empreendimento,
+			headers: {
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			$scope.dispositivos = response.data;
+			this.refreshToken($http);
+		}, function errorCallback(response) {
+
+		});
+	}
+
+	$scope.addDispositivo = function(dispositivo) {
+		angular.forEach($scope.dispositivos, function(item) {
+			item.selected = false;
+		})
+		dispositivo.selected = true;
+		$scope.sensor.nome_dispositivo = dispositivo.nome;
+		$scope.sensor.id_dispositivo = dispositivo.id;
+		$('#modal-dispositivo').modal('hide');
+	}
+
+	$scope.loadDispositivo();
+	$scope.loadTipoSensor();
+	$scope.loadSensores();
 });
 
 function refreshToken($http){
