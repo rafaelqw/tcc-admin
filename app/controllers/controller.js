@@ -655,7 +655,7 @@ app.controller('UsuarioCtrl', function($scope, $http){
 		$scope.msgUsuarios = null;
 		$http({
 			method: 'GET',
-			url: baseUrlApi+'/autenticacao',
+			url: baseUrlApi+'/usuario/id_empreendimento/'+ JSON.parse(sessionStorage.getItem('tcc-admin.user.id_empreendimento')),
 			headers: {
 				'Authorization': 'Bearer ' +token
 			}
@@ -719,7 +719,7 @@ app.controller('UsuarioCtrl', function($scope, $http){
 						break;
 				}
 
-				id_empreendimento_logado = JSON.parse(sessionStorage.getItem('tcc-admin.user.token'));
+				var id_empreendimento_logado = JSON.parse(sessionStorage.getItem('tcc-admin.user.id_empreendimento'));
 				if(empreendimento == id_empreendimento_logado)
 					$scope.usuario.empreendimento.push(empreendimento);
 			});
