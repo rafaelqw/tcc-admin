@@ -683,11 +683,6 @@ app.controller('UsuarioCtrl', function($scope, $http){
 		});
 	}
 
-	$scope.newUsuario = function() {
-		$scope.usuario = {};
-		$scope.municipios = null;
-	}
-
 	$scope.loadEmpreendimento = function() {
 		$scope.empreendimentos = [];
 		$scope.msgEmpreendimentos = null;
@@ -723,6 +718,10 @@ app.controller('UsuarioCtrl', function($scope, $http){
 						empreendimento.dsc_porte = "Grande";
 						break;
 				}
+
+				id_empreendimento_logado = JSON.parse(sessionStorage.getItem('tcc-admin.user.token'));
+				if(empreendimento == id_empreendimento_logado)
+					$scope.usuario.empreendimento.push(empreendimento);
 			});
 			this.refreshToken($http);
 		}, function errorCallback(response) {
@@ -757,6 +756,91 @@ app.controller('UsuarioCtrl', function($scope, $http){
 			$scope.empreendimentoDetail.nome_cliente = $scope.empreendimentoDetail.Cliente.PessoaJuridicas[0].nome_fantasia+"("+ $scope.empreendimentoDetail.Cliente.PessoaJuridicas[0].razao_social +")";
 		}
 	}
+
+	$scope.showModalAddEmpreendimento = function() {
+		$('#modal-empreendimento').modal('show');
+	}
+
+	$scope.addEmpreendimento = function(item) {
+		item.selected = true;
+		$scope.usuario.empreendimentos.push(item);
+	}
+
+	$scope.delEmpreendimento = function(index, item) {
+		angular.forEach($scope.empreendimentos, function(emp){
+			if(item.id == emp.id)
+				emp.selected = false;
+		});
+		$scope.usuario.empreendimentos.splice(index, 1);
+	}
+
+	$scope.saveUsuario = function() {
+		var btn = $('#salvar-usuario');
+		btn.button('loading');
+
+		if($scope.usuario.empreendimentos.length <= 0){
+			$.toast({
+				heading: 'Atenção!',
+				text: 'É necessário associar ao menos um empreendimento',
+				position: 'top-right',
+				loaderBg:'#dc3545',
+				icon: 'error',
+				hideAfter: 3500
+			});
+			btn.button('reset');
+			return false;
+		}
+
+		var body = {
+			nome: $scope.usuario.nome,
+			email: $scope.usuario.email,
+			senha: $scope.usuario.senha,
+			empreendimentos: $scope.usuario.empreendimentos
+		};
+
+		$http({
+			method: 'POST',
+			url: baseUrlApi+'/usuario',
+			data: body,
+			headers: { 
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			btn.button('reset');
+			$.toast({
+				heading: 'Sucesso!',
+				text: response.data.msg,
+				position: 'top-right',
+				loaderBg:'#ff6849',
+				icon: 'success',
+				hideAfter: 3500
+			});
+			$scope.newUsuario();
+		}, function errorCallback(response) {
+			btn.button('reset');
+			if (response.data.erro.name == "TokenExpiredError") {
+				window.location = 'lock-screen.html';
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+			}
+		});
+	}
+
+	$scope.newUsuario = function() {
+		$scope.usuario = {
+			empreendimentos: []
+		}
+	}
+
+	$scope.loadEmpreendimento();
 });
 
 app.controller('DispositivoCtrl', function($scope, $http){
