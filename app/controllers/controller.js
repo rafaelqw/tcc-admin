@@ -441,9 +441,43 @@ app.controller('ClienteCtrl', function($scope, $http, $routeParams){
 	$scope.editCliente = function(cliente){
 		dataEditing = angular.copy(cliente);
 	}
+
+	$scope.deleteCliente = function(id_cliente){
+		$http({
+			method: 'DELETE',
+			url: baseUrlApi+'/cliente/' + id_cliente,
+			headers: { 
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			$scope.loadCliente();
+			$.toast({
+				heading: 'Sucesso!',
+				text: response.data.msg,
+				position: 'top-right',
+				loaderBg:'#ff6849',
+				icon: 'success',
+				hideAfter: 3500
+			});
+		}, function errorCallback(response) {
+			if (response.data.erro.name == "TokenExpiredError") {
+				window.location = 'lock-screen.html';
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+			}
+		});
+	}
 });
 
-app.controller('EmpreendimentoCtrl', function($scope, $http){
+app.controller('EmpreendimentoCtrl', function($scope, $http, $routeParams){
 	var token = JSON.parse(sessionStorage.getItem('tcc-admin.user.token'));
 
 	$scope.segmentos = [
@@ -538,8 +572,16 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 	$scope.newEmpreendimento = function() {
 		$scope.loadEstados();
 		$scope.loadClientes();
-		$scope.empreendimento = {};
-		$scope.municipios = null;
+		if($routeParams.edit){
+			$scope.editEmpre = true;
+			$scope.empreendimento = dataEditing;
+			$scope.loadMunicipios($scope.empreendimento.Estado.cod_ibge);
+		}
+		else{
+			$scope.editEmpre = false;
+			$scope.empreendimento = {};
+			$scope.municipios = null;
+		}
 	}
 
 	$scope.showModalCliente = function() {
@@ -674,6 +716,62 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 		});
 	}
 
+	$scope.atualizarEmpreendimento = function() {
+		var btn = $('#salvar-empreendimento');
+		btn.button('loading');
+		var body = {
+			id: $scope.empreendimento.id,
+			nome: $scope.empreendimento.nome,
+			descricao: $scope.empreendimento.descricao,
+			cnpj: $scope.empreendimento.cnpj,
+			cep: $scope.empreendimento.cep,
+			logradouro: $scope.empreendimento.logradouro,
+			numero: $scope.empreendimento.numero,
+			bairro: $scope.empreendimento.bairro,
+			id_estado: $scope.empreendimento.id_estado,
+			id_municipio: $scope.empreendimento.id_municipio,
+			id_segmento: $scope.empreendimento.id_segmento,
+			id_porte: $scope.empreendimento.id_porte,
+			id_cliente: $scope.empreendimento.id_cliente,
+			complemento: $scope.empreendimento.complemento
+		};
+
+		$http({
+			method: 'PUT',
+			url: baseUrlApi+'/empreendimento',
+			data: body,
+			headers: { 
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			btn.button('reset');
+			$.toast({
+				heading: 'Sucesso!',
+				text: response.data.msg,
+				position: 'top-right',
+				loaderBg:'#ff6849',
+				icon: 'success',
+				hideAfter: 3500
+			});
+			$scope.newEmpreendimento();
+		}, function errorCallback(response) {
+			btn.button('reset');
+			if (response.data.erro.name == "TokenExpiredError") {
+				window.location = 'lock-screen.html';
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+			}
+		});
+	}
+
 	$scope.addCliente = function(cliente) {
 		angular.forEach($scope.clientes, function(item) {
 			item.selected = false;
@@ -732,6 +830,44 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 			}
 		}, function errorCallback(response) {
 			if (response.data.erro.name == "TokenExpiredError") {
+				window.location = 'lock-screen.html';
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+			}
+		});
+	}
+	
+	$scope.editEmpreendimento = function(empreendimento){
+		dataEditing = angular.copy(empreendimento);
+	}
+
+	$scope.deleteEmpreendimento = function(id_empreendimento){
+		$http({
+			method: 'DELETE',
+			url: baseUrlApi+'/empreendimento/' + id_empreendimento,
+			headers: { 
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			$scope.loadEmpreendimento();
+			$.toast({
+				heading: 'Sucesso!',
+				text: response.data.msg,
+				position: 'top-right',
+				loaderBg:'#ff6849',
+				icon: 'success',
+				hideAfter: 3500
+			});
+		}, function errorCallback(response) {
+			if (response.data.erro != undefined && response.data.erro.name == "TokenExpiredError") {
 				window.location = 'lock-screen.html';
 			} else {
 				$.toast({
@@ -1048,10 +1184,44 @@ app.controller('UsuarioCtrl', function($scope, $http, $routeParams){
 		});
 	}
 
+	$scope.deleteUsuario = function(id_usuario){
+		$http({
+			method: 'DELETE',
+			url: baseUrlApi+'/usuario/' + id_usuario,
+			headers: { 
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			$scope.loadUsuario();
+			$.toast({
+				heading: 'Sucesso!',
+				text: response.data.msg,
+				position: 'top-right',
+				loaderBg:'#ff6849',
+				icon: 'success',
+				hideAfter: 3500
+			});
+		}, function errorCallback(response) {
+			if (response.data.erro != undefined && response.data.erro.name == "TokenExpiredError") {
+				window.location = 'lock-screen.html';
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+			}
+		});
+	}
+
 	$scope.loadEmpreendimento();
 });
 
-app.controller('DispositivoCtrl', function($scope, $http){
+app.controller('DispositivoCtrl', function($scope, $http, $routeParams){
 	$scope.id_empreendimento = sessionStorage.getItem('tcc-admin.user.id_empreendimento');
 	var token = JSON.parse(sessionStorage.getItem('tcc-admin.user.token'));
 
@@ -1139,11 +1309,109 @@ app.controller('DispositivoCtrl', function($scope, $http){
 			}
 		});
 	}
-	$scope.loadModelos();
+
+	$scope.atualizarDispositivo = function(){
+		var btn = $('#salvar-cliente');
+		btn.button('loading');
+		var body = {
+			dispositivo:{
+				id: $scope.dispositivo.id,
+				nome: $scope.dispositivo.nome,
+				id_modelo: $scope.dispositivo.id_modelo,
+				descricao: $scope.dispositivo.descricao,
+				id_empreendimento: $scope.id_empreendimento
+			}
+		};
+
+		$http({
+			method: 'PUT',
+			url: baseUrlApi+'/dispositivo',
+			data: body,
+			headers: { 
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			btn.button('reset');
+			$.toast({
+				heading: 'Sucesso!',
+				text: response.data.msg,
+				position: 'top-right',
+				loaderBg:'#ff6849',
+				icon: 'success',
+				hideAfter: 3500
+			});
+		}, function errorCallback(response) {
+			btn.button('reset');
+			if (response.data.erro.name == "TokenExpiredError") {
+				window.location = 'lock-screen.html';
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+			}
+		});
+	}
+
+	$scope.newDispostivo = function(){
+		$scope.loadModelos();
+		if($routeParams.edit){
+			$scope.editDisp = true;
+			$scope.dispositivo = dataEditing;
+		}
+		else{
+			$scope.editDisp = false;
+			$scope.dispositivo = {};
+		}
+	}
+	
+	$scope.editDispositivo = function(dispositivo){
+		dataEditing = angular.copy(dispositivo);
+	}
+
+	$scope.deleteDispositivo = function(id_dispositivo){
+		$http({
+			method: 'DELETE',
+			url: baseUrlApi+'/dispositivo/' + id_dispositivo,
+			headers: { 
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			$scope.loadDispositivo();
+			$.toast({
+				heading: 'Sucesso!',
+				text: response.data.msg,
+				position: 'top-right',
+				loaderBg:'#ff6849',
+				icon: 'success',
+				hideAfter: 3500
+			});
+		}, function errorCallback(response) {
+			if (response.data.erro != undefined && response.data.erro.name == "TokenExpiredError") {
+				window.location = 'lock-screen.html';
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+			}
+		});
+	}
+
 	$scope.loadDispositivo();
 });
 
-app.controller('SensorCtrl', function($scope, $http){
+app.controller('SensorCtrl', function($scope, $http, $routeParams){
 	$scope.id_empreendimento = sessionStorage.getItem('tcc-admin.user.id_empreendimento');
 	var token = JSON.parse(sessionStorage.getItem('tcc-admin.user.token'));
 	$scope.sensor = {};
@@ -1235,6 +1503,56 @@ app.controller('SensorCtrl', function($scope, $http){
 		});
 	}
 
+	$scope.atualizarSensor = function(){
+		var btn = $('#salvar-cliente');
+		btn.button('loading');
+		var body = {
+			sensor:{
+				id: $scope.sensor.id,
+				nome: $scope.sensor.nome,
+				id_tipo_sensor: $scope.sensor.id_tipo_sensor,
+				descricao: $scope.sensor.descricao,
+				localizacao: $scope.sensor.localizacao,
+				id_dispositivo: $scope.sensor.id_dispositivo,
+				id_empreendimento: $scope.id_empreendimento
+			}
+		};
+
+		$http({
+			method: 'PUT',
+			url: baseUrlApi+'/sensor',
+			data: body,
+			headers: { 
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			btn.button('reset');
+			$.toast({
+				heading: 'Sucesso!',
+				text: response.data.msg,
+				position: 'top-right',
+				loaderBg:'#ff6849',
+				icon: 'success',
+				hideAfter: 3500
+			});
+		}, function errorCallback(response) {
+			btn.button('reset');
+			if (response.data.erro.name == "TokenExpiredError") {
+				window.location = 'lock-screen.html';
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+			}
+		});
+	}
+
 	$scope.showModalDispositivo = function() {
 		$('#modal-dispositivo').modal('show');
 	}
@@ -1263,6 +1581,55 @@ app.controller('SensorCtrl', function($scope, $http){
 		$scope.sensor.nome_dispositivo = dispositivo.nome;
 		$scope.sensor.id_dispositivo = dispositivo.id;
 		$('#modal-dispositivo').modal('hide');
+	}
+
+	$scope.newSensor = function(){
+		if($routeParams.edit){
+			$scope.editSen = true;
+			$scope.sensor = dataEditing;
+		}
+		else{
+			$scope.editSen = false;
+			$scope.sensor = {};
+		}
+	}
+	
+	$scope.editSensor = function(sensor){
+		dataEditing = angular.copy(sensor);
+	}
+
+	$scope.deleteSensor = function(id_sensor){
+		$http({
+			method: 'DELETE',
+			url: baseUrlApi+'/sensor/' + id_sensor,
+			headers: { 
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			$scope.loadSensores();
+			$.toast({
+				heading: 'Sucesso!',
+				text: response.data.msg,
+				position: 'top-right',
+				loaderBg:'#ff6849',
+				icon: 'success',
+				hideAfter: 3500
+			});
+		}, function errorCallback(response) {
+			if (response.data.erro != undefined && response.data.erro.name == "TokenExpiredError") {
+				window.location = 'lock-screen.html';
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+			}
+		});
 	}
 
 	$scope.loadDispositivo();

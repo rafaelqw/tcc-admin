@@ -17,7 +17,7 @@
                             <th class="text-center">#</th>
                             <th>Nome</th>
                             <th>Email</th>
-                            <th class="text-center">Detalhes</th>
+                            <th class="text-center">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -26,9 +26,10 @@
                             <td>{{ usuario.nome }}</td>
                             <td>{{ usuario.email }}</td>
                             <td class="text-center">
-                                    <a href="#!usuario-new?edit=true">
+                                <a href="#!usuario-new?edit=true">
                                     <button class="btn btn-sm btn-warning" ng-click="editUsuario(usuario)"><i class="fa fa-edit"></i></button>
                                 </a>
+                                <button class="btn btn-sm btn-danger" ng-click="deleteUsuario(usuario.id)"><i class="fa fa-trash"></i></button>
                             </td>
                         </tr>
                     </tbody>

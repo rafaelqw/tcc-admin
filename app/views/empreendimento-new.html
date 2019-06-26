@@ -125,7 +125,10 @@
 				<div class="clearfix">
 					<div class="float-right">
 						<button class="btn btn-secondary" ng-click="newEmpreendimento()">Cancelar</button>
-						<button class="btn btn-success" id="salvar-empreendimento" ng-click="saveEmpreendimento()" data-loading-text="<i class='fa fa-refresh fa-spin'></i> Salvando, Aguarde...">Salvar</button>
+						<button class="btn btn-success" id="salvar-empreendimento" ng-click="saveEmpreendimento()" ng-if="editEmpre == false"
+						data-loading-text="<i class='fa fa-refresh fa-spin'></i> Salvando, Aguarde...">Salvar</button>
+						<button class="btn btn-success" id="salvar-empreendimento" ng-click="atualizarEmpreendimento()" ng-if="editEmpre == true"
+						data-loading-text="<i class='fa fa-refresh fa-spin'></i> Salvando, Aguarde...">Atualizar</button>
 					</div>
 				</div>
 			</div>

@@ -28,7 +28,11 @@
 						<td>{{ dispositivo.descricao }}</td>
 						<td class="text-center">{{ dispositivo.modelo }}</td>
 						<td class="text-center">
+							<a href="#!dispositivo-new?edit=true">
+								<button class="btn btn-sm btn-warning" ng-click="editDispositivo(dispositivo)"><i class="fa fa-edit"></i></button>
+							</a>
 							<button class="btn btn-sm btn-info" ng-click="detailDispositivo(dispositivo)"><i class="fa fa-align-justify"></i></button>
+							<button class="btn btn-sm btn-danger" ng-click="deleteDispositivo(dispositivo.id)"><i class="fa fa-trash"></i></button>
 						</td>
                     </tr>
                 </tbody>

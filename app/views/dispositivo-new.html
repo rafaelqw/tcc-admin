@@ -7,7 +7,7 @@
         </ol>
     </div>
 </div>
-<div class="row" ng-init="newCliente()">
+<div class="row" ng-init="newDispostivo()">
 	<div class="col-12">
 		<div class="card">
 			<div class="card-body">
@@ -46,8 +46,11 @@
 				<div class="clearfix">
 					<div class="float-right">
 						<button class="btn btn-secondary">Cancelar</button>
-						<button class="btn btn-success" id="salvar-cliente" ng-click="saveDispositivo()" 
+						<button class="btn btn-success" id="salvar-cliente" ng-click="saveDispositivo()" ng-if="editDisp == false"
 								data-loading-text="<i class='fa fa-refresh fa-spin'></i> Salvando, Aguarde...">Salvar
+                        </button>
+                        <button class="btn btn-success" id="salvar-cliente" ng-click="atualizarDispositivo()" ng-if="editDisp == true"
+								data-loading-text="<i class='fa fa-refresh fa-spin'></i> Salvando, Aguarde...">Atualizar
 						</button>
 					</div>
 				</div>

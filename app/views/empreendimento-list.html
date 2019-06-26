@@ -41,7 +41,11 @@
 						<td class="text-center">{{ empreendimento.dsc_segmento }}</td>
 						<td class="text-center">{{ empreendimento.dsc_porte }}</td>
 						<td class="text-center">
+							<a href="#!empreendimento-new?edit=true">
+								<button class="btn btn-sm btn-warning" ng-click="editEmpreendimento(empreendimento)"><i class="fa fa-edit"></i></button>
+							</a>
 							<button class="btn btn-sm btn-info" ng-click="detailEmpreendimento(empreendimento)"><i class="fa fa-align-justify"></i></button>
+							<button class="btn btn-sm btn-danger" ng-click="deleteEmpreendimento(empreendimento.id)"><i class="fa fa-trash"></i></button>
 						</td>
                     </tr>
                 </tbody>

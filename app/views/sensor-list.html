@@ -30,7 +30,11 @@
                         <td class="text-center">{{ sensor.tipo_sensor }}</td>
                         <td class="text-center">{{ sensor.localizacao }}</td>
 						<td class="text-center">
+							<a href="#!sensor-new?edit=true">
+								<button class="btn btn-sm btn-warning" ng-click="editSensor(sensor)"><i class="fa fa-edit"></i></button>
+							</a>
 							<button class="btn btn-sm btn-info" ng-click="detailSensor(sensor)"><i class="fa fa-align-justify"></i></button>
+							<button class="btn btn-sm btn-danger" ng-click="deleteSensor(sensor.id)"><i class="fa fa-trash"></i></button>
 						</td>
                     </tr>
                 </tbody>
