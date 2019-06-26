@@ -38,6 +38,14 @@
 					</div>
 				</div>
 				<div class="row">
+					<div class="col-sm-2">
+						<button class="btn btn-success" ng-click="showModalAddEmpreendimento()">
+							<i class="fa fa-plus-circle"></i> Adicionar Empreendimento
+						</button>
+					</div>
+				</div>
+				<br>
+				<div class="row">
 					<div class="col-12">
 						<table>
 							<table id="myTable" class="table table-hover table-sm color-table muted-table table-bordered">
@@ -45,7 +53,7 @@
 									<tr>
 										<th class="text-center">#</th>
 										<th>Nome</th>
-										<th class="text-center">CNPJ</th>
+										<th class="text-center">CNPJ/CPF</th>
 										<th class="text-center">Cliente</th>
 										<th class="text-center">Segmento</th>
 										<th class="text-center">Porte</th>
@@ -61,16 +69,18 @@
 									<tr ng-if="msgEmpreendimentos">
 										<td class="text-center" colspan="15">{{ msgEmpreendimentos }}</td>
 									</tr>
-									<tr ng-repeat="empreendimento in empreendimentos">
+									<tr ng-repeat="empreendimento in usuario.empreendimentos">
 										<td class="text-center">{{ empreendimento.id }}</td>
 										<td>{{ empreendimento.nome }}</td>
-										<td class="text-center">{{ empreendimento.cnpj }}</td>
-										<td ng-show="empreendimento.Cliente.PessoaFisicas.length > 0">{{ empreendimento.Cliente.PessoaFisicas[0].nome }}</td>
-										<td ng-show="empreendimento.Cliente.PessoaJuridicas.length > 0">{{ empreendimento.Cliente.PessoaJuridicas[0].nome_fantasia }} <small>({{ empreendimento.Cliente.PessoaJuridicas[0].razao_social }})</small></td>
+										<td ng-show="empreendimento.cnpj != null" class="text-center">{{ empreendimento.cnpj }}</td>
+										<td ng-show="empreendimento.cpf != null" class="text-center">{{ empreendimento.cpf }}</td>
+										<td ng-show="empreendimento.nome_cliente != null">{{ empreendimento.nome_cliente }}</td>
+										<td ng-show="empreendimento.nome_fantasia != null">{{ empreendimento.nome_fantasia }} <small>({{ empreendimento.razao_social }})</small></td>
 										<td class="text-center">{{ empreendimento.dsc_segmento }}</td>
 										<td class="text-center">{{ empreendimento.dsc_porte }}</td>
 										<td class="text-center">
 											<button class="btn btn-sm btn-info" ng-click="detailEmpreendimento(empreendimento)"><i class="fa fa-align-justify"></i></button>
+											<button class="btn btn-sm btn-danger" ng-click="delEmpreendimento($index, empreendimento)"><i class="fa fa-trash"></i></button>
 										</td>
 									</tr>
 								</tbody>
@@ -82,8 +92,8 @@
 			<div class="card-footer bg-transparent">
 				<div class="clearfix">
 					<div class="float-right">
-						<button class="btn btn-secondary" ng-click="loadEmpreendimento()">Cancelar</button>
-						<button class="btn btn-success" id="salvar-usuario" ng-click="saveusuario()" 
+						<button class="btn btn-secondary" ng-click="newUsuario()">Cancelar</button>
+						<button class="btn btn-success" id="salvar-usuario" ng-click="saveUsuario()" 
 								data-loading-text="<i class='fa fa-refresh fa-spin'></i> Salvando, Aguarde...">Salvar
 						</button>
 					</div>
@@ -196,6 +206,61 @@
 						</div>
 					</div>
 				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modal-empreendimento" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-xl" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Empreendimentos</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<table id="myTable" class="table table-hover table-sm color-table muted-table table-bordered">
+					<thead>
+						<tr>
+							<th class="text-center">#</th>
+							<th>Nome</th>
+							<th class="text-center">CNPJ</th>
+							<th class="text-center">Cliente</th>
+							<th class="text-center">Segmento</th>
+							<th class="text-center">Porte</th>
+							<th class="text-center">Detalhes</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-show="empreendimentos == []">
+							<td class="text-center" colspan="15">
+								<i class="fa fa-redo-alt fa-spin"></i> Aguarde... Carregando registros!
+							</td>
+						</tr>
+						<tr ng-if="msgEmpreendimentos">
+							<td class="text-center" colspan="15">{{ msgEmpreendimentos }}</td>
+						</tr>
+						<tr ng-repeat="empreendimento in empreendimentos">
+							<td class="text-center">{{ empreendimento.id }}</td>
+							<td>{{ empreendimento.nome }}</td>
+							<td class="text-center">{{ empreendimento.cnpj }}</td>
+							<td ng-show="empreendimento.nome_cliente != null">{{ empreendimento.nome_cliente }}</td>
+							<td ng-show="empreendimento.nome_fantasia != null">{{ empreendimento.nome_fantasia }} <small>({{ empreendimento.razao_social }})</small></td>
+							<td class="text-center">{{ empreendimento.dsc_segmento }}</td>
+							<td class="text-center">{{ empreendimento.dsc_porte }}</td>
+							<td class="text-center">
+								<button class="btn btn-sm btn-success" ng-if="!empreendimento.selected" ng-click="addEmpreendimento(empreendimento)"><i class="fa fa-check"></i></button>
+								<button class="btn btn-sm btn-dark" ng-if="empreendimento.selected" ng-disabled="true"><i class="fa fa-check"></i></button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
