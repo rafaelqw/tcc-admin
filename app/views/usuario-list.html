@@ -26,7 +26,9 @@
                             <td>{{ usuario.nome }}</td>
                             <td>{{ usuario.email }}</td>
                             <td class="text-center">
-                                <button class="btn btn-sm btn-info" ng-click="detailUsuario(usuario)"><i class="fa fa-align-justify"></i></button>
+                                    <a href="#!usuario-new?edit=true">
+                                    <button class="btn btn-sm btn-warning" ng-click="editUsuario(usuario)"><i class="fa fa-edit"></i></button>
+                                </a>
                             </td>
                         </tr>
                     </tbody>

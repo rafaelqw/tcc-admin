@@ -263,6 +263,7 @@ app.controller('ClienteCtrl', function($scope, $http, $routeParams){
 		var btn = $('#salvar-cliente');
 		btn.button('loading');
 		var body = {
+			id: $scope.cliente.id,
 			email: $scope.cliente.email,
 			cep: $scope.cliente.cep,
 			logradouro: $scope.cliente.logradouro,
@@ -439,7 +440,6 @@ app.controller('ClienteCtrl', function($scope, $http, $routeParams){
 
 	$scope.editCliente = function(cliente){
 		dataEditing = angular.copy(cliente);
-
 	}
 });
 
@@ -747,7 +747,7 @@ app.controller('EmpreendimentoCtrl', function($scope, $http){
 	}
 });
 
-app.controller('UsuarioCtrl', function($scope, $http){
+app.controller('UsuarioCtrl', function($scope, $http, $routeParams){
 	var token = JSON.parse(sessionStorage.getItem('tcc-admin.user.token'));
 
 	$scope.detailEmpreendimento = function(item) {
@@ -939,9 +939,17 @@ app.controller('UsuarioCtrl', function($scope, $http){
 	}
 
 	$scope.newUsuario = function() {
-		$scope.usuario = {
-			empreendimentos: []
+		if($routeParams.edit){
+			$scope.usuario = dataEditing;
 		}
+		else{
+			$scope.usuario = {
+				empreendimentos: []
+			}
+		}
+	}
+	$scope.editUsuario = function(usuario){
+		dataEditing = angular.copy(usuario);
 	}
 
 	$scope.loadEmpreendimento();
