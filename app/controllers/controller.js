@@ -938,18 +938,114 @@ app.controller('UsuarioCtrl', function($scope, $http, $routeParams){
 		});
 	}
 
+	$scope.updateUsuario = function() {
+		var btn = $('#salvar-usuario');
+		btn.button('loading');
+
+		if($scope.usuario.empreendimentos.length <= 0){
+			$.toast({
+				heading: 'Atenção!',
+				text: 'É necessário associar ao menos um empreendimento',
+				position: 'top-right',
+				loaderBg:'#dc3545',
+				icon: 'error',
+				hideAfter: 3500
+			});
+			btn.button('reset');
+			return false;
+		}
+
+		var body = {
+			id: $scope.usuario.id,
+			nome: $scope.usuario.nome,
+			email: $scope.usuario.email,
+			senha: $scope.usuario.senha,
+			empreendimentos: $scope.usuario.empreendimentos
+		};
+
+		$http({
+			method: 'PUT',
+			url: baseUrlApi+'/usuario',
+			data: body,
+			headers: { 
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			btn.button('reset');
+			$.toast({
+				heading: 'Sucesso!',
+				text: response.data.msg,
+				position: 'top-right',
+				loaderBg:'#ff6849',
+				icon: 'success',
+				hideAfter: 3500
+			});
+			$scope.newUsuario();
+		}, function errorCallback(response) {
+			btn.button('reset');
+			if (response.data.erro.name == "TokenExpiredError") {
+				window.location = 'lock-screen.html';
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+			}
+		});
+	}
+
 	$scope.newUsuario = function() {
 		if($routeParams.edit){
+			$scope.editUsu = true;
 			$scope.usuario = dataEditing;
+			$scope.loadUsuarioEmpreendimento($scope.usuario.id)
 		}
 		else{
+			$scope.editUsu = false;
 			$scope.usuario = {
 				empreendimentos: []
 			}
 		}
 	}
+
 	$scope.editUsuario = function(usuario){
 		dataEditing = angular.copy(usuario);
+	}
+
+	$scope.loadUsuarioEmpreendimento = function(id_usuario) {
+		$scope.msgUsuarios = null;
+		$http({
+			method: 'GET',
+			url: baseUrlApi+'/empreendimento/id_usuario/' + id_usuario,
+			headers: {
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			$scope.usuario.empreendimentos = response.data;
+			this.refreshToken($http);
+		}, function errorCallback(response) {
+			$scope.msgUsuarios = response.data.msg;
+			if (response.data.erro) {
+				if (response.data.erro.name == "TokenExpiredError") {
+					window.location = 'lock-screen.html';
+				}
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+				this.refreshToken($http);
+			}
+		});
 	}
 
 	$scope.loadEmpreendimento();
