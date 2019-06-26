@@ -64,9 +64,9 @@
 									<div class="form-group">
 										<label class="control-label">Sexo</label>
 										<select class="form-control" ng-model="cliente.sexo">
-											<option value="feminino">Feminino</option>
-											<option value="masculino">Masculino</option>
-											<option value="outro">Outro</option>
+											<option value="Feminino">Feminino</option>
+											<option value="Masculino">Masculino</option>
+											<option value="Outro">Outro</option>
 										</select>
 									</div>
 								</div>
@@ -230,8 +230,11 @@
 			<div class="card-footer bg-transparent">
 				<div class="clearfix">
 					<div class="float-right">
-						<button class="btn btn-secondary">Cancelar</button>
-						<button class="btn btn-success" id="salvar-cliente" ng-click="saveCliente()" 
+						<button class="btn btn-secondary" ng-click="limparCliente()">Limpar</button>
+						<button class="btn btn-success" id="salvar-cliente" ng-click="updateCliente()" ng-if="btnEdit == true"
+								data-loading-text="<i class='fa fa-refresh fa-spin'></i> Salvando, Aguarde...">Editar
+						</button>
+						<button class="btn btn-success" id="salvar-cliente" ng-click="saveCliente()" ng-if="btnEdit == false"
 								data-loading-text="<i class='fa fa-refresh fa-spin'></i> Salvando, Aguarde...">Salvar
 						</button>
 					</div>

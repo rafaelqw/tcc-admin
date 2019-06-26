@@ -1,4 +1,5 @@
 var baseUrlApi = "http://localhost:7000";
+var dataEditing = {};
 
 app.controller('LoginCtrl', function($scope, $window, $http){
 	$scope.dataLogin = {
@@ -66,7 +67,7 @@ app.controller('DashboardCtrl', function($scope){
 	$scope.title = 'Bem-vindo, esta é nossa página principal!';
 });
 
-app.controller('ClienteCtrl', function($scope, $http){
+app.controller('ClienteCtrl', function($scope, $http, $routeParams){
 	var token = JSON.parse(sessionStorage.getItem('tcc-admin.user.token'));
 	$scope.tipos_telefone = [
 		{ id: 1, dsc: "FIXO" },
@@ -153,14 +154,112 @@ app.controller('ClienteCtrl', function($scope, $http){
 	}
 
 	$scope.newCliente = function(){
+		if($routeParams.edit){
+			$scope.btnEdit = true;
+			$scope.cliente = dataEditing;
+			$scope.cliente.telefones = $scope.cliente.Telefones;
+			if($scope.cliente.tipo_cadastro == "pf"){
+				$scope.cliente.nome = $scope.cliente.PessoaFisicas[0].nome;
+				$scope.cliente.cpf = $scope.cliente.PessoaFisicas[0].cpf;
+				$scope.cliente.rg = $scope.cliente.PessoaFisicas[0].rg;
+				$scope.cliente.data_nascimento = $scope.cliente.PessoaFisicas[0].data_nascimento;
+				$scope.cliente.data_nascimento = moment($scope.cliente.data_nascimento).format("DD/MM/YYYY");
+				$scope.cliente.sexo = $scope.cliente.PessoaFisicas[0].sexo;
+			}
+			if($scope.cliente.tipo_cadastro == "pj"){
+				$scope.cliente.nome_fantasia = $scope.cliente.PessoaJuridicas[0].nome_fantasia;
+				$scope.cliente.razao_social = $scope.cliente.PessoaJuridicas[0].razao_social;
+				$scope.cliente.cnpj = $scope.cliente.PessoaJuridicas[0].cnpj;
+				$scope.cliente.inscricao_estadual = $scope.cliente.PessoaJuridicas[0].inscricao_estadual;
+			}
+			$scope.loadMunicipios($scope.cliente.id_municipio);
+		}
+		else{
+			$scope.btnEdit = false;
+			$scope.cliente = {
+				tipo_cadastro: "pf",
+				telefones: []
+			};	
+		}
+		$scope.loadEstados();
+	}
+
+	$scope.limparCliente = function(){
 		$scope.cliente = {
 			tipo_cadastro: "pf",
 			telefones: []
 		};
-		$scope.loadEstados();
 	}
 
 	$scope.saveCliente = function(){
+		var btn = $('#salvar-cliente');
+		btn.button('loading');
+		var body = {
+			email: $scope.cliente.email,
+			cep: $scope.cliente.cep,
+			logradouro: $scope.cliente.logradouro,
+			numero: $scope.cliente.numero,
+			bairro: $scope.cliente.bairro,
+			id_estado: $scope.cliente.id_estado,
+			id_municipio: $scope.cliente.id_municipio,
+			complemento: $scope.cliente.complemento,
+			id_segmento: $scope.cliente.id_segmento,
+			id_porte: $scope.cliente.id_porte,
+			tipo_cadastro: $scope.cliente.tipo_cadastro,
+			/* Cliente Pessoa Física */
+			nome: $scope.cliente.nome,
+			cpf: $scope.cliente.cpf,
+			rg: $scope.cliente.rg,
+			data_nascimento: moment($scope.cliente.data_nascimento, 'DD/MM/YYYY').format('YYYY-MM-DD'),
+			sexo: $scope.cliente.sexo,
+			/* Cliente Pessoa Jurídica */
+			nome_fantasia: $scope.cliente.nome_fantasia,
+			razao_social: $scope.cliente.razao_social,
+			cnpj: $scope.cliente.cnpj,
+			inscricao_estadual: $scope.cliente.inscricao_estadual,
+			telefones: $scope.cliente.telefones
+		};
+
+		$http({
+			method: 'POST',
+			url: baseUrlApi+'/cliente',
+			data: body,
+			headers: { 
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' +token
+			}
+		}).then(function successCallback(response) {
+			$scope.cliente = {
+				tipo_cadastro: "pf"
+			};
+			btn.button('reset');
+			$.toast({
+				heading: 'Sucesso!',
+				text: response.data.msg,
+				position: 'top-right',
+				loaderBg:'#ff6849',
+				icon: 'success',
+				hideAfter: 3500
+			});
+			$scope.newCliente();
+		}, function errorCallback(response) {
+			btn.button('reset');
+			if (response.data.erro.name == "TokenExpiredError") {
+				window.location = 'lock-screen.html';
+			} else {
+				$.toast({
+					heading: 'Atenção!',
+					text: response.data.msg,
+					position: 'top-right',
+					loaderBg:'#dc3545',
+					icon: 'error',
+					hideAfter: 3500
+				});
+			}
+		});
+	}
+
+	$scope.updateCliente = function(){
 		var btn = $('#salvar-cliente');
 		btn.button('loading');
 		var body = {
@@ -336,6 +435,11 @@ app.controller('ClienteCtrl', function($scope, $http){
 
 	$scope.delTelefone = function(telefone) {
 		$scope.cliente.telefones.splice(telefone, 1);
+	}
+
+	$scope.editCliente = function(cliente){
+		dataEditing = angular.copy(cliente);
+
 	}
 });
 

@@ -1,6 +1,6 @@
 <div class="row page-titles">
     <div class="col-md-5 col-8 align-self-center">
-        <h3 class="text-themecolor">Usuários Cadastrados</h3>
+        <h3 class="text-themecolor">Clientes Cadastrados</h3>
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="#!cliente-list">Cliente</a></li>
             <li class="breadcrumb-item active">Listar</li>
@@ -30,6 +30,9 @@
 						<td class="text-center">{{ cliente.inscricao_estadual }}</td>
 						<!-- <td class="text-center">{{ cliente.numero_cel }}</td> -->
 						<td class="text-center">
+							<a href="#!cliente-new?edit=true">
+								<button class="btn btn-sm btn-warning" ng-click="editCliente(cliente)"><i class="fa fa-edit"></i></button>
+							</a>
 							<button class="btn btn-sm btn-info" ng-click="detailCliente(cliente)"><i class="fa fa-align-justify"></i></button>
 						</td>
                     </tr>
