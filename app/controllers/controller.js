@@ -290,7 +290,7 @@ app.controller('ClienteCtrl', function($scope, $http, $routeParams){
 		};
 
 		$http({
-			method: 'POST',
+			method: 'PUT',
 			url: baseUrlApi+'/cliente',
 			data: body,
 			headers: { 
