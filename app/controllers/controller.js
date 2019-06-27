@@ -185,6 +185,7 @@ app.controller('ClienteCtrl', function($scope, $http, $routeParams){
 	}
 
 	$scope.limparCliente = function(){
+		$scope.btnEdit = false;
 		$scope.cliente = {
 			tipo_cadastro: "pf",
 			telefones: []
@@ -570,8 +571,6 @@ app.controller('EmpreendimentoCtrl', function($scope, $http, $routeParams){
 	}
 
 	$scope.newEmpreendimento = function() {
-		$scope.loadEstados();
-		$scope.loadClientes();
 		if($routeParams.edit){
 			$scope.editEmpre = true;
 			$scope.empreendimento = dataEditing;
@@ -582,6 +581,8 @@ app.controller('EmpreendimentoCtrl', function($scope, $http, $routeParams){
 			$scope.empreendimento = {};
 			$scope.municipios = null;
 		}
+		$scope.loadEstados();
+		$scope.loadClientes();
 	}
 
 	$scope.showModalCliente = function() {
@@ -609,7 +610,12 @@ app.controller('EmpreendimentoCtrl', function($scope, $http, $routeParams){
 					cliente.nome = cliente.PessoaFisicas[0].nome;
 					cliente.cnpjCpf = cliente.PessoaFisicas[0].cpf;
 				}
-			})
+			});
+
+			angular.forEach($scope.clientes, function(cliente){
+				if($scope.empreendimento.id_cliente == cliente.id)
+					$scope.empreendimento.nome_cliente = cliente.nome;
+			});
 		}, function errorCallback(response) {
 			$scope.clientes = null;
 			$scope.msgClientes = response.data.msg;
@@ -880,6 +886,12 @@ app.controller('EmpreendimentoCtrl', function($scope, $http, $routeParams){
 				});
 			}
 		});
+	}
+
+	$scope.limparEmpreendimento = function(){
+		$scope.editEmpre = false;
+		$scope.empreendimento = {};
+			$scope.municipios = null;
 	}
 });
 
@@ -1218,6 +1230,13 @@ app.controller('UsuarioCtrl', function($scope, $http, $routeParams){
 		});
 	}
 
+	$scope.limparUsuario = function(){
+		$scope.editUsu = false;
+		$scope.usuario = {
+			empreendimentos: []
+		}
+	}
+
 	$scope.loadEmpreendimento();
 });
 
@@ -1408,6 +1427,11 @@ app.controller('DispositivoCtrl', function($scope, $http, $routeParams){
 		});
 	}
 
+	$scope.limparDispositivo = function(){
+		$scope.editDisp = false;
+		$scope.dispositivo = {};
+	} 
+
 	$scope.loadDispositivo();
 });
 
@@ -1567,6 +1591,10 @@ app.controller('SensorCtrl', function($scope, $http, $routeParams){
 			}
 		}).then(function successCallback(response) {
 			$scope.dispositivos = response.data;
+			angular.forEach($scope.dispositivos, function(item){
+				if(item.id == $scope.sensor.id_dispositivo)
+					$scope.sensor.nome_dispositivo = item.nome;
+			});
 			this.refreshToken($http);
 		}, function errorCallback(response) {
 
@@ -1630,6 +1658,11 @@ app.controller('SensorCtrl', function($scope, $http, $routeParams){
 				});
 			}
 		});
+	}
+
+	$scope.limparSensor = function(){
+		$scope.editSen = false;
+		$scope.sensor = {};
 	}
 
 	$scope.loadDispositivo();

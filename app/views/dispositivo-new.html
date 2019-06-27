@@ -25,8 +25,8 @@
                             <div class="col-5">
                                 <div class="form-group">
                                     <label class="control-label">Modelo</label>
-                                    <select class="form-control" ng-model="dispositivo.id_modelo">
-                                        <option ng-repeat="modelo in modelos" value="{{ modelo.id }}">{{ modelo.modelo }}</option>
+                                    <select class="form-control" ng-model="dispositivo.id_modelo"
+                                        ng-options="modelo.id as modelo.modelo for modelo in modelos">
                                     </select>
                                 </div>
                             </div>
@@ -45,11 +45,11 @@
 			<div class="card-footer bg-transparent">
 				<div class="clearfix">
 					<div class="float-right">
-						<button class="btn btn-secondary">Cancelar</button>
-						<button class="btn btn-success" id="salvar-cliente" ng-click="saveDispositivo()" ng-if="editDisp == false"
+						<button class="btn btn-secondary" ng-click="limparDispositivo()">Limpar</button>
+						<button class="btn btn-success" id="salvar-cliente" ng-click="saveDispositivo()" ng-show="editDisp == false"
 								data-loading-text="<i class='fa fa-refresh fa-spin'></i> Salvando, Aguarde...">Salvar
                         </button>
-                        <button class="btn btn-success" id="salvar-cliente" ng-click="atualizarDispositivo()" ng-if="editDisp == true"
+                        <button class="btn btn-success" id="salvar-cliente" ng-click="atualizarDispositivo()" ng-show="editDisp == true"
 								data-loading-text="<i class='fa fa-refresh fa-spin'></i> Salvando, Aguarde...">Atualizar
 						</button>
 					</div>

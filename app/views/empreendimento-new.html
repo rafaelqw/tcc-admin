@@ -42,21 +42,16 @@
 					<div class="col-3">
 						<div class="form-group">
 							<label class="control-label">Segmento</label>
-							<select class="form-control" ng-model="empreendimento.id_segmento">
-								<option value="1">Residência</option>
-								<option value="2">Comércio</option>
-								<option value="3">Indústria</option>
+							<select class="form-control" ng-model="empreendimento.id_segmento" ng-options="segmento.id as segmento.dsc for segmento in segmentos">
 							</select>
 						</div>
 					</div>
 					<div class="col-3">
 						<div class="form-group">
 							<label class="control-label">Porte</label>
-							<select class="form-control" ng-model="empreendimento.id_porte">
-								<option value="1">Pequeno</option>
-								<option value="2">Médio</option>
-								<option value="3">Grande</option>
+							<select class="form-control" ng-model="empreendimento.id_porte" ng-options="porte.id as porte.dsc for porte in portes">
 							</select>
+							<!--porte.id as porte.dsc for porte in portes-->
 						</div>
 					</div>
 				</div>
@@ -124,10 +119,10 @@
 			<div class="card-footer bg-transparent">
 				<div class="clearfix">
 					<div class="float-right">
-						<button class="btn btn-secondary" ng-click="newEmpreendimento()">Cancelar</button>
-						<button class="btn btn-success" id="salvar-empreendimento" ng-click="saveEmpreendimento()" ng-if="editEmpre == false"
+						<button class="btn btn-secondary" ng-click="limparEmpreendimento()">Limpar</button>
+						<button class="btn btn-success" id="salvar-empreendimento" ng-click="saveEmpreendimento()" ng-show="editEmpre == false"
 						data-loading-text="<i class='fa fa-refresh fa-spin'></i> Salvando, Aguarde...">Salvar</button>
-						<button class="btn btn-success" id="salvar-empreendimento" ng-click="atualizarEmpreendimento()" ng-if="editEmpre == true"
+						<button class="btn btn-success" id="salvar-empreendimento" ng-click="atualizarEmpreendimento()" ng-show="editEmpre == true"
 						data-loading-text="<i class='fa fa-refresh fa-spin'></i> Salvando, Aguarde...">Atualizar</button>
 					</div>
 				</div>

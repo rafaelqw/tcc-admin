@@ -231,10 +231,10 @@
 				<div class="clearfix">
 					<div class="float-right">
 						<button class="btn btn-secondary" ng-click="limparCliente()">Limpar</button>
-						<button class="btn btn-success" id="salvar-cliente" ng-click="updateCliente()" ng-if="btnEdit == true"
+						<button class="btn btn-success" id="salvar-cliente" ng-click="updateCliente()" ng-show="btnEdit == true"
 								data-loading-text="<i class='fa fa-refresh fa-spin'></i> Salvando, Aguarde...">Atualizar
 						</button>
-						<button class="btn btn-success" id="salvar-cliente" ng-click="saveCliente()" ng-if="btnEdit == false"
+						<button class="btn btn-success" id="salvar-cliente" ng-click="saveCliente()" ng-show="btnEdit == false"
 								data-loading-text="<i class='fa fa-refresh fa-spin'></i> Salvando, Aguarde...">Salvar
 						</button>
 					</div>

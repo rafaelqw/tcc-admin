@@ -92,11 +92,11 @@
 			<div class="card-footer bg-transparent">
 				<div class="clearfix">
 					<div class="float-right">
-						<button class="btn btn-secondary" ng-click="newUsuario()">Cancelar</button>
-						<button class="btn btn-success" id="salvar-usuario" ng-click="saveUsuario()" ng-if="editUsu == false" 
+						<button class="btn btn-secondary" ng-click="limparUsuario()">Limpar</button>
+						<button class="btn btn-success" id="salvar-usuario" ng-click="saveUsuario()" ng-show="editUsu == false" 
 								data-loading-text="<i class='fa fa-refresh fa-spin'></i> Salvando, Aguarde...">Salvar
 						</button>
-						<button class="btn btn-success" id="salvar-usuario" ng-click="updateUsuario()" ng-if="editUsu == true"
+						<button class="btn btn-success" id="salvar-usuario" ng-click="updateUsuario()" ng-show="editUsu == true"
 								data-loading-text="<i class='fa fa-refresh fa-spin'></i> Salvando, Aguarde...">Atualizar
 						</button>
 					</div>

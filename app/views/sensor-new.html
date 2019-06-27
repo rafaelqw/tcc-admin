@@ -25,8 +25,8 @@
                             <div class="col-2">
                                 <div class="form-group">
                                     <label class="control-label">Tipo do Sensor</label>
-                                    <select class="form-control" ng-model="sensor.id_tipo_sensor">
-                                        <option ng-repeat="tipo_sensor in tipos_sensores" value="{{ tipo_sensor.id }}">{{ tipo_sensor.tipo_sensor }}</option>
+                                    <select class="form-control" ng-model="sensor.id_tipo_sensor" 
+                                        ng-options="sensor.id as sensor.tipo_sensor for sensor in tipos_sensores">
                                     </select>
                                 </div>
                             </div>
@@ -62,11 +62,11 @@
 			<div class="card-footer bg-transparent">
 				<div class="clearfix">
 					<div class="float-right">
-						<button class="btn btn-secondary">Cancelar</button>
-						<button class="btn btn-success" id="salvar-cliente" ng-click="saveSensor()" ng-if="editSen == false"
+						<button class="btn btn-secondary" ng-click="limparSensor()">Limpar</button>
+						<button class="btn btn-success" id="salvar-cliente" ng-click="saveSensor()" ng-show="editSen == false"
                             data-loading-text="<i class='fa fa-refresh fa-spin'></i> Salvando, Aguarde...">Salvar
                         </button>
-                        <button class="btn btn-success" id="salvar-cliente" ng-click="atualizarSensor()" ng-if="editSen == true"
+                        <button class="btn btn-success" id="salvar-cliente" ng-click="atualizarSensor()" ng-show="editSen == true"
                             data-loading-text="<i class='fa fa-refresh fa-spin'></i> Salvando, Aguarde...">Atualizar
 						</button>
 					</div>
